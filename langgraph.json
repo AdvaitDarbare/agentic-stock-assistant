@@ -1,0 +1,8 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "sql_news_agent": "./graph.py:workflow"
+  },
+  "env": ".env",
+  "python_version": "3.12"
+}
