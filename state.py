@@ -13,4 +13,4 @@ class AgentState(TypedDict):
     chat_history: List[BaseMessage]
     output: str
     current_date: str
-    next_node: Optional[str]
+    next_node: None
