@@ -3,14 +3,13 @@ from datetime import date, timedelta
 
 from dotenv import load_dotenv
 import requests
-import openai
+from langchain_ollama import OllamaEmbeddings
 import psycopg2
 
 # ------------------ CONFIG & ENV ------------------
 load_dotenv()
 
 FINNHUB_API_KEY = os.getenv("FINNHUB_API_KEY")
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 DB_NAME  = os.getenv("DB_NAME")
 DB_USER  = os.getenv("DB_USER")
@@ -18,7 +17,7 @@ DB_PASS  = os.getenv("DB_PASS")
 DB_HOST  = os.getenv("DB_HOST")
 DB_PORT  = os.getenv("DB_PORT")
 
-openai.api_key = OPENAI_API_KEY
+ollama_embeddings = OllamaEmbeddings(model="nomic-embed-text")
 COMPANY = "TSLA"        # change to any ticker or company name you like
 
 # ------------------ FETCH NEWS --------------------
@@ -70,11 +69,7 @@ for art in articles:
         pub_date = today.isoformat()
 
     # get embedding
-    resp = openai.embeddings.create(
-        model="text-embedding-3-small",
-        input=text
-    )
-    embedding = resp.data[0].embedding  # list of floats
+    embedding = ollama_embeddings.embed_query(text)
 
     # insert row
     cursor.execute(

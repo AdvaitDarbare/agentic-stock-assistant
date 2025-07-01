@@ -1,33 +1,25 @@
-from graph import graph
-from state import AgentState
-from langchain_core.messages import HumanMessage, AIMessage
+from fastapi import FastAPI
+from langgraph.fastapi import add_routes
 
-def init_state() -> AgentState:
-    return {
-        "input": "",
-        "chat_history": [],
-        "output": "",
-        "current_date": ""
-    }
+# 1️⃣  import the compiled LangGraph object from graph.py
+from graph import workflow
 
-def run_loop():
-    state = init_state()
-    print("Agent running—type ‘quit’ to exit.")
-    while True:
-        user_input = input("\n> ").strip()
-        if user_input.lower() in ("quit", "exit", "q"):
-            break
-        if not user_input:
-            continue
+app = FastAPI(
+    title="SQL Agent Demo (Gemma)",
+    description="Minimal FastAPI wrapper around a multi-agent Stock & News assistant",
+    version="0.1.0",
+)
 
-        # Update and invoke graph
-        state["input"] = user_input
-        state = graph.invoke(state)
+# 2️⃣  Mount the LangGraph routes:
+#     /chat  – POST {"input": "..."} → assistant response
+#     /graph – interactive graph+console UI
+add_routes(app, workflow)          # path_prefix defaults to "/"
 
-        # Print and append to history
-        print("\nAssistant:", state["output"])
+# 3️⃣  Your own sanity-check endpoints
+@app.get("/")
+def read_root():
+    return {"message": "Hello, your API is running!"}
 
-    print("\nGoodbye!")
-
-if __name__ == "__main__":
-    run_loop()
+@app.get("/health")
+def health_check():
+    return {"status": "ok"}

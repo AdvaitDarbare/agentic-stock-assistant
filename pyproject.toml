@@ -1,0 +1,36 @@
+[tool.poetry]
+name = "sql-agent-demo-gemma"
+version = "0.1.0"
+description = "A minimal SQL Agent demo with stock & news data"
+authors = ["Advait Darbare <advait.darbare9@gmail.com>"]
+readme = "README.md"
+package-mode = false
+
+[tool.poetry.dependencies]
+python               = "^3.12"
+python-dotenv        = "^1.1.1"
+psycopg = { version="^3.1", extras=["binary"] }
+pandas               = "^2.3.0"
+pgvector             = ">=0.2.5,<0.3.0"
+langchain            = "^0.3.26"
+langchain-core       = "^0.3.26"  # Added for Document import
+langchain-ollama     = "^0.3.3"
+langgraph            = "^0.5.0"
+fastapi              = "^0.115.14"
+uvicorn              = "^0.34.3"
+yfinance             = "^0.2.63"
+kaggle               = "^1.7.4.5"
+mlflow               = "^3.1.1"
+langchain-postgres   = "^0.0.15"              # Updated to latest version for langgraph compatibility
+asyncpg = "^0.30.0"
+mcp = {extras = ["cli"], version = "^1.10.1"}
+xxhash = "^3.5.0"
+mcp-server = "^0.1.4"
+ormsgpack = "^1.10.0"
+
+[tool.poetry.group.dev.dependencies]
+# (add any dev‐only tools here)
+
+[build-system]
+requires    = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

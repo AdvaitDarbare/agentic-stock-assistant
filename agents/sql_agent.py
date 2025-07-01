@@ -1,14 +1,25 @@
 import re
 from typing import Any
-from langchain_core.messages import HumanMessage, AIMessage
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+import mlflow.langchain
 from tools.db import get_sql_agent_chain
 from state import AgentState
+from langchain_ollama import ChatOllama
+
+
+def clean_sql_output(text: str) -> str:
+    # This regex will now look for content within ```sql ... ``` or just ``` ... ```
+    # If no such block is found, it will try to clean up leading/trailing backticks and 'sql' keyword
+    match = re.search(r"```(?:sql)?\s*(.*?)\s*```", text, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return text.strip("`").replace("sql", "").strip() # Fallback for no code blocks
 
 def run_sql_agent(state: AgentState) -> AgentState:
-    # Create a fresh agent each time for hot-reload compatibility
     sql_agent_chain = get_sql_agent_chain()
 
-    # Get input state
+    llm = ChatOllama(model=sql_agent_chain.llm.model, temperature=sql_agent_chain.llm.temperature)  # reinstantiate LLM
+
     history = state.get("chat_history", [])
     if not isinstance(history, list):
         history = []
@@ -16,10 +27,9 @@ def run_sql_agent(state: AgentState) -> AgentState:
     question = state.get("input", "").strip()
     current_date = state.get("current_date", "")
 
-    # Try to extract a date from the question
+    # Extract date from input
     iso_match = re.search(r"\d{4}-\d{2}-\d{2}", question)
     slash_match = re.search(r"(\d{1,2})/(\d{1,2})/(\d{2,4})", question)
-
     if iso_match:
         current_date = iso_match.group()
     elif slash_match:
@@ -28,31 +38,47 @@ def run_sql_agent(state: AgentState) -> AgentState:
             y = "20" + y
         current_date = f"{y}-{int(m):02d}-{int(d):02d}"
 
-    # Run the SQL agent with chat history and question
-    result: Any = sql_agent_chain.invoke({
-        "input": question,
-        "chat_history": history,
-    })
+    # 🧠 Inject schema into the prompt
+    try:
+        table_info = sql_agent_chain.input_schema.db.get_table_info()
+    except Exception as e:
+        print("[ERROR] Could not get schema info:", e)
+        table_info = "stock_prices(symbol TEXT, date DATE, open FLOAT, high FLOAT, low FLOAT, close FLOAT, volume BIGINT, pct_change FLOAT)"
 
-    print("DEBUG raw result ->", result, type(result))
+    prompt = f"""
+You are a helpful assistant that generates PostgreSQL queries.
 
-    if isinstance(result, dict):
-        answer_text = (
-            result.get("output")
-            or result.get("answer")
-            or result.get("result")
-            or ""
-        )
-    else:
-        answer_text = str(result)
+Today's date: {current_date}
 
-    print("DEBUG answer_text ->", repr(answer_text))
+Schema:
+{table_info}
+
+Instructions:
+- Only return valid SQL.
+- Wrap column names in double quotes.
+- **Always wrap the SQL query in a ```sql ... ``` block.**
+""".strip()
+
+    from langchain_core.messages import SystemMessage, HumanMessage
+    messages = [
+        SystemMessage(content=prompt),
+        HumanMessage(content=question)
+    ]
+    cleaned_sql = "" # Initialize here for error logging
+    try:
+        response = llm.invoke(messages).content
+        cleaned_sql = clean_sql_output(response)
+        print("[DEBUG] Generated SQL:", cleaned_sql)
+        raw_answer = sql_agent_chain.db.run(cleaned_sql)
+        answer_text = str(raw_answer)
+    except Exception as e:
+        print("[ERROR] SQL chain or database run failed:", e)
+        print(f"[ERROR] SQL that failed: {cleaned_sql}") # Log the problematic SQL
+        answer_text = "Sorry, I couldn't answer that due to a database error."
 
     if not answer_text:
-        print(f"[WARN] No answer found for: {question}")
         answer_text = "I couldn't find an answer."
 
-    # Append new exchange to chat history
     messages = history + [
         HumanMessage(content=question),
         AIMessage(content=answer_text)

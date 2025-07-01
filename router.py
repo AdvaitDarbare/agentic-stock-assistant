@@ -11,55 +11,55 @@ agent should handle the request:
 """
 
 from langchain_core.messages import SystemMessage, HumanMessage
-from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
 from route_schema import RouteDecision
 from state import AgentState
+
+import json
 
 ###############################################################################
 # 1. LLM with structured-output via *function-calling* (needed for gpt-3.5)
 ###############################################################################
-llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
+llm = ChatOllama(model="gemma3n:e2b", temperature=0)
 
-# Use OpenAI’s function-calling interface so the response
+# Use Ollama’s function-calling interface so the response
 # can be parsed directly into the RouteDecision Pydantic model.
-router_llm = llm.with_structured_output(
-    RouteDecision,
-    method="function_calling",          # <- critical for gpt-3.5
-)
+router_llm = llm
 
 ###############################################################################
 # 2. Router node
 ###############################################################################
 def run_llm_router(state: AgentState) -> AgentState:
-    """
-    Decide which downstream node to run next and store that choice
-    in state["next_node"]. Falls back gracefully if the LLM response
-    can’t be parsed.
-    """
     try:
-        decision = router_llm.invoke(
+        response = router_llm.invoke(
             [
                 SystemMessage(
                     content=(
                         "You are a routing assistant for a stock-and-news chatbot.\n\n"
-                        "Choose one:\n"
-                        "• If the user asks about stock prices, volumes, dates or other "
-                        "numeric financial info → return \"sql_agent\".\n"
-                        "• If the user asks for recent news, headlines, announcements, "
-                        "or company events → return \"news_agent\".\n"
-                        "• If the request is unrelated or unclear → return \"fallback\".\n\n"
-                        "Respond ONLY with the value in the `step` field."
+                        "Choose only one of the following routes:\n"
+                        "- 'sql_agent' for stock prices, volumes, and dates.\n"
+                        "- 'news_agent' for news, headlines, and company updates.\n"
+                        "- 'fallback' for unrelated or unclear queries.\n\n"
+                        "Just reply with one of: sql_agent, news_agent, or fallback."
                     )
                 ),
                 HumanMessage(content=state.get("input", "")),
             ]
         )
-        state["next_node"] = decision.step      # "sql_agent" | "news_agent" | "fallback"
-        print("🧭 Router decision →", decision.step)
+
+        # Clean raw string response
+        choice = response.content.strip().lower()
+
+        if choice in {"sql_agent", "news_agent", "fallback"}:
+            state["next_node"] = choice
+        else:
+            print("⚠️ Unexpected router output →", choice)
+            state["next_node"] = "fallback"
+
+        print("🧭 Router decision →", state["next_node"])
 
     except Exception as err:
-        # Any parsing failure or LLM issue routes to fallback
-        print("[Router] structured output failed → fallback:", err)
+        print("[Router] error → fallback:", err)
         state["next_node"] = "fallback"
 
     return state
