@@ -243,23 +243,26 @@ def agent_fallback_node(s: AgentState) -> AgentState:
 
 
 # ─── Synth node ──────────────────────────────────────────────────────────
-_SYNTH_PROMPT = PromptTemplate.from_template(
-    """
+_SYNTH_PROMPT = PromptTemplate.from_template("""
 You are compiling the final answer for the user.
-The `Stock:` and `News:` sections already contain the factual results that were fetched. **Use them verbatim.**
-If `Stock:` looks like a Python list (e.g. `[(203.5,)]`) interpret the first numeric value as the answer.
+The variables below already contain the fetched data. **Use them verbatim.**
 
 User question: {q}
 
-Stock data returned:
+Stock data returned (Python repr):
 {sql}
 
-News data returned:
+News data returned (markdown):
 {news}
 
-Now write a concise answer that states the stock information first, then a brief news summary (if any). If `News:` is empty, just answer with the stock part.
-"""
-)
+== Formatting rules (MUST follow) ==
+1. Begin with the **ticker, date, and requested field/value** on its own line:
+   `AMZN close on 2025-06-13  →  212.10`
+   • Round prices to 2 decimals.
+2. Add a blank line, then the header `### Latest headlines` (level-3 markdown).
+3. Show the 5 headlines as a numbered list **exactly as they appear** (no extra summarising).
+4. If news is empty, omit the header entirely.
+""")
 
 
 def synth_node(s: AgentState) -> AgentState:
@@ -273,6 +276,9 @@ def synth_node(s: AgentState) -> AgentState:
         answer = (_SYNTH_PROMPT | _LLM).invoke(
             {"q": s["query"], "sql": stock, "news": news}
         ).content.strip()
+
+    print("[DEBUG] Final synthesized answer:", answer)
+
 
     # update memory
     chat = s.get("chat_history", [])
