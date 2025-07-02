@@ -256,13 +256,28 @@ News data returned (markdown):
 {news}
 
 == Formatting rules (MUST follow) ==
-1. Begin with the **ticker, date, and requested field/value** on its own line:
-   `AMZN close on 2025-06-13  →  212.10`
-   • Round prices to 2 decimals.
-2. Add a blank line, then the header `### Latest headlines` (level-3 markdown).
-3. Show the 5 headlines as a numbered list **exactly as they appear** (no extra summarising).
-4. If news is empty, omit the header entirely.
+
+1. For the stock data, write a natural-language answer summarizing **all the available fields**.
+   - Always include the ticker and date.
+   - Mention each field/value clearly in a sentence.
+   - Round all numeric prices to 2 decimals.
+
+   Example for one field:
+   "On June 12, 2025, AAPL's close price was 212.10."
+
+   Example for multiple fields:
+   "On June 12, 2025, AAPL opened at 190.23 and closed at 195.44."
+
+2. Include the news section **only if the USER QUESTION explicitly asks about news, headlines, articles, or updates**.
+   - If the user question does not mention these, completely omit the news section—even if news data is present.
+   - If the user question does mention news, and news data is available, then:
+     - Add a blank line.
+     - Add the header: ### Latest headlines
+     - List the 5 news headlines as a numbered list exactly as they appear. No extra summarizing.
+   - If news data is empty, omit the header entirely.
 """)
+
+
 
 
 def synth_node(s: AgentState) -> AgentState:

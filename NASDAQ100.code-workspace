@@ -1,0 +1,16 @@
+{
+	"folders": [
+		{
+			"name": "NASDAQ100",
+			"path": "../../Downloads/NASDAQ100"
+		},
+		{
+			"name": "sql-agent-demo-Gemma",
+			"path": "."
+		},
+		{
+			"path": "../../Downloads/News_data"
+		}
+	],
+	"settings": {}
+}
