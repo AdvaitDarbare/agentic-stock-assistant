@@ -1,18 +1,16 @@
 """
- Multi-Agent Stock & News Assistant – LangGraph
- ------------------------------------------------
+ Multi-Agent Stock & News Assistant – LangGraph (MCP edition)
+ -----------------------------------------------------------
  • router        – decides which specialist to run next
- • agent_sql     – fetches numbers from Postgres
- • agent_news    – fetches recent headlines
- • agent_fallback– handles chit-chat/unknowns
+ • agent_sql     – calls the SQL MCP server (:8010/mcp)
+ • agent_news    – calls the News MCP server (:8020/mcp)
+ • agent_fallback– calls the Fallback MCP server (:8030/mcp)
  • synth         – writes the final answer and updates "memory"
 """
 
 from __future__ import annotations
 
-import json
-import os
-import re
+import asyncio, json, os, re, datetime, pprint, sys
 from typing import Literal, Optional, TypedDict, List
 
 from dotenv import load_dotenv
@@ -20,62 +18,77 @@ from langgraph.graph import END, StateGraph
 from langchain_core.prompts import PromptTemplate
 from langchain_core.messages import HumanMessage, AIMessage
 from langchain_ollama import ChatOllama
+from langchain_mcp_adapters.client import MultiServerMCPClient
 
-# ─── Import specialist agents ────────────────────────────────────────────
-from agents.sql_agent import run_sql_agent
-from agents.news_agent import run_news_agent
-from agents.fallback_agent import run_fallback_agent
+# ─── Debug helper ────────────────────────────────────────────────────────
+def _dbg(tag: str, obj) -> None:
+    ts = datetime.datetime.now().strftime("%H:%M:%S")
+    print(f"\n[{ts}] === {tag} ===", file=sys.stderr, flush=True)
+    pprint.pprint(obj, width=110, stream=sys.stderr)
+    print("-" * 40, file=sys.stderr, flush=True)
+
+def _extract_output(res):
+    """Return tool output for both {output: ...} and raw-string shapes."""
+    if isinstance(res, dict) and "output" in res:
+        return res["output"]
+    return res
 
 # ─── Env & LLM ───────────────────────────────────────────────────────────
 load_dotenv()
 _LLM = ChatOllama(model=os.getenv("LLM_MODEL", "gemma2b:latest"), temperature=0)
 
-# ─── Helpers ──────────────────────────────────────────────────────────────
+# ─── MCP tool bootstrap ─────────────────────────────────────────────────
+mcp_client: MultiServerMCPClient | None = None
+sql_tool = news_tool = fb_tool = None
+
+async def _init_mcp_tools():
+    global mcp_client, sql_tool, news_tool, fb_tool
+    if mcp_client is None:
+        mcp_client = MultiServerMCPClient(
+            {
+                "sql":  {"url": "http://localhost:8010/mcp", "transport": "streamable_http"},
+                "news": {"url": "http://localhost:8020/mcp", "transport": "streamable_http"},
+                "fb":   {"url": "http://localhost:8030/mcp", "transport": "streamable_http"},
+            }
+        )
+        for t in await mcp_client.get_tools():          # adapter returns list
+            if t.name.endswith("run_sql_agent"):
+                sql_tool = t
+            elif t.name.endswith("run_news_agent"):
+                news_tool = t
+            elif t.name.endswith("run_fallback_agent"):
+                fb_tool = t
+
+        assert sql_tool and news_tool and fb_tool, "Missing MCP tools!"
+
+asyncio.run(_init_mcp_tools())
+
+# ─── Helpers ────────────────────────────────────────────────────────────
 _US_DATE_RE = re.compile(r"\b(0?[1-9]|1[0-2])[/-](0?[1-9]|[12][0-9]|3[01])[/-](20\d{2})\b")
 
-
 def _normalize_dates(text: str) -> str:
-    """Turn 06/11/2025 → 2025-06-11 so Postgres is happy."""
-    def _fix(m):
-        mon, day, yr = m.group(1), m.group(2), m.group(3)
-        return f"{yr}-{int(mon):02d}-{int(day):02d}"
-
+    def _fix(m): return f"{m.group(3)}-{int(m.group(1)):02d}-{int(m.group(2)):02d}"
     return _US_DATE_RE.sub(_fix, text)
 
-
 TICKER_MAP = {
-    # aliases and symbols
     "aapl": "AAPL", "apple": "AAPL",
     "msft": "MSFT", "microsoft": "MSFT",
     "googl": "GOOGL", "google": "GOOGL", "alphabet": "GOOGL",
     "tsla": "TSLA", "tesla": "TSLA",
     "amzn": "AMZN", "amazon": "AMZN",
 }
-
 _TICKER_RE = re.compile(r"\$?[A-Za-z]{1,5}")
 
-
 def _extract_ticker(q: str) -> str:
-    """Extract an explicit $TICKER, alias, or bare symbol; return "" if none."""
-    dollar = re.search(r"\$([A-Za-z]{1,5})\b", q)
-    if dollar:
-        return dollar.group(1).upper()
+    if m := re.search(r"\$([A-Za-z]{1,5})\b", q): return m.group(1).upper()
+    for w in re.findall(_TICKER_RE, q.lower()):
+        if w in TICKER_MAP: return TICKER_MAP[w]
+    upp = re.findall(r"\b([A-Z]{1,5})\b", q)
+    return upp[0] if upp else ""
 
-    for word in re.findall(_TICKER_RE, q.lower()):
-        if word in TICKER_MAP:
-            return TICKER_MAP[word]
-
-    upper = re.findall(r"\b([A-Z]{1,5})\b", q)
-    if upper:
-        return upper[0]
-    return ""
-
-
-# ─── State type ───────────────────────────────────────────────────────────
+# ─── State schema ───────────────────────────────────────────────────────
 class AgentState(TypedDict):
-    # per-turn input
     query: str
-    # router-derived flags
     need_sql: bool
     need_news: bool
     sql_done: bool
@@ -84,165 +97,91 @@ class AgentState(TypedDict):
     news_result: Optional[str]
     answer: Optional[str]
     error: Optional[str]
-    # long-term memory
     chat_history: List[HumanMessage | AIMessage]
     last_ticker: Optional[str]
     last_date: Optional[str]
-    last_query: Optional[str]         # ← keeps track of previous question
+    last_query: Optional[str]
 
-
-# ─── Router ───────────────────────────────────────────────────────────────
-_ROUTER_PROMPT = PromptTemplate.from_template(
-    """
-Analyze this question and return JSON exactly like:
-  {{ "need_sql": true|false, "need_news": true|false }}
-
+# ─── Router ─────────────────────────────────────────────────────────────
+_ROUTER_PROMPT = PromptTemplate.from_template("""
+Return JSON: {{ "need_sql": true|false, "need_news": true|false }}
 Rules:
-- need_sql  = true if the user asks about price / open / close / high / low / volume or any financial data.
-- need_news = true if the user asks for news, headlines, articles, or updates.
-- If the question asks for BOTH data & news, set both to true.
-- If the question is ambiguous or general, default both to false and let the fallback agent handle it.
-
+- need_sql  = true if user asks about price/open/close/high/low/volume.
+- need_news = true if user asks for news/headlines/articles/updates.
+If ambiguous, default both to false.
 Question: "{q}"
-"""
-)
-
+""")
 
 def router_node(s: AgentState) -> AgentState:
-    """
-    Decide what the user needs and produce a per-turn state.
-
-    • sql_done/news_done flags set by specialist nodes are preserved so that
-      the same agent is not called twice in a single turn.
-    • If the user sends a new question (query ≠ last_query), wipe old flags
-      and results so they don’t bleed into the next turn.
-    """
-    print("\n--- ENTERING ROUTER ---")
-    print(f"Incoming state: {s}")
-
-    is_new_query = s.get("last_query") != s["query"]
-
-    # carry over previous per-turn info
-    new_state: AgentState = {
+    _dbg("ROUTER-IN", s)
+    is_new = s.get("last_query") != s["query"]
+    st: AgentState = {
         "query": s["query"],
         "chat_history": s.get("chat_history", []),
         "last_ticker": s.get("last_ticker"),
         "last_date": s.get("last_date"),
-        "last_query": s["query"],               # update memory
-        "need_sql": s.get("need_sql", False),
-        "need_news": s.get("need_news", False),
-        "sql_done": s.get("sql_done", False),
-        "news_done": s.get("news_done", False),
-        "sql_result": s.get("sql_result"),
-        "news_result": s.get("news_result"),
+        "last_query": s["query"],
+        "need_sql": False if is_new else s.get("need_sql", False),
+        "need_news": False if is_new else s.get("need_news", False),
+        "sql_done": False if is_new else s.get("sql_done", False),
+        "news_done": False if is_new else s.get("news_done", False),
+        "sql_result": None if is_new else s.get("sql_result"),
+        "news_result": None if is_new else s.get("news_result"),
         "answer": None,
         "error": None,
     }
+    if st["sql_done"]:  st["need_sql"]  = False
+    if st["news_done"]: st["need_news"] = False
+    st["last_ticker"] = _extract_ticker(st["query"]) or st.get("last_ticker", "")
+    ql = st["query"].lower()
+    st["need_sql"]  |= bool(re.search(r"\b(price|open|close|volume|high|low)\b", ql))
+    st["need_news"] |= bool(re.search(r"\b(news|headline|article|update)\b", ql))
 
-    # clear turn-scoped keys for a brand-new question
-    if is_new_query:
-        new_state.update(
-            need_sql=False,
-            need_news=False,
-            sql_done=False,
-            news_done=False,
-            sql_result=None,
-            news_result=None,
-            error=None,
-        )
-
-    # ticker extraction
-    current_ticker = _extract_ticker(new_state["query"]) or new_state.get("last_ticker", "")
-    print(f"Previous Ticker: '{s.get('last_ticker')}', Current Ticker: '{current_ticker}'")
-    new_state["last_ticker"] = current_ticker
-
-    # heuristics
-    q_low = new_state["query"].lower()
-    need_sql_heuristic = bool(re.search(r"\b(price|open|close|volume|high|low|financial data|stock data)\b", q_low))
-    need_news_heuristic = bool(re.search(r"\b(news|headline|article|update|latest updates|related news)\b", q_low))
-
-    # LLM confirmation
     try:
-        raw = (_ROUTER_PROMPT | _LLM).invoke({"q": new_state["query"]}).content.strip()
-        if raw.startswith("```"):
-            raw = raw.strip("`").replace("json", "").strip()
+        raw = (_ROUTER_PROMPT | _LLM).invoke({"q": st["query"]}).content.strip()
+        if raw.startswith("```"): raw = raw.strip("`").replace("json", "").strip()
         flags = json.loads(raw)
-        need_sql_llm = bool(flags.get("need_sql"))
-        need_news_llm = bool(flags.get("need_news"))
-    except Exception as exc:
-        print("Router fallback to heuristics:", exc)
-        need_sql_llm = need_news_llm = False
+        st["need_sql"]  |= bool(flags.get("need_sql"))
+        st["need_news"] |= bool(flags.get("need_news"))
+    except Exception: pass
+    _dbg("ROUTER-OUT", st)
+    return st
 
-    new_state["need_sql"] = new_state["need_sql"] or need_sql_heuristic or need_sql_llm
-    new_state["need_news"] = new_state["need_news"] or need_news_heuristic or need_news_llm
+# ─── Edge decision ──────────────────────────────────────────────────────
+def decide_next(s: AgentState) -> Literal["agent_sql","agent_news","agent_fallback","synth"]:
+    if s.get("error"): return "synth"
+    if s["need_sql"]  and not s["sql_done"]:  return "agent_sql"
+    if s["need_news"] and not s["news_done"]: return "agent_news"
+    if not (s["need_sql"] or s["need_news"]): return "agent_fallback"
+    return "synth"
 
-    print(f"Determined needs: SQL={new_state['need_sql']}, News={new_state['need_news']}")
-    print(f"Outgoing state: {new_state}")
-    print("--- EXITING ROUTER ---\n")
-    return new_state
-
-
-# ─── Decide edge ─────────────────────────────────────────────────────────
-def decide_next(s: AgentState) -> Literal["agent_sql", "agent_news", "agent_fallback", "synth"]:
-    if s.get("error"):
-        return "synth"
-    if s.get("need_sql") and not s.get("sql_done"):
-        return "agent_sql"
-    if s.get("need_news") and not s.get("news_done"):
-        return "agent_news"
-    if not (s.get("need_sql") or s.get("need_news")):
-        return "agent_fallback"
-    if (s.get("sql_done") or not s.get("need_sql")) and (
-        s.get("news_done") or not s.get("need_news")
-    ):
-        return "synth"
-    return "synth"  # safeguard
-
-
-# ─── Specialist nodes ────────────────────────────────────────────────────
-def agent_sql_node(s: AgentState) -> AgentState:
-    print("\n>>> EXECUTING SQL AGENT NODE <<<")
+# ─── Specialist nodes ───────────────────────────────────────────────────
+async def agent_sql_node(s: AgentState) -> AgentState:
+    _dbg("SQL-IN", s)
     try:
-        cleaned_q = _normalize_dates(s["query"])
-        payload = {
-            "input": cleaned_q,
-            "last_ticker": s.get("last_ticker"),
-            "last_date": s.get("last_date"),
-            "chat_history": s.get("chat_history", []),
-        }
-        result_state = run_sql_agent(payload)
-        result = result_state.get("output", "")
-        print(f"SQL agent result: {result}\n")
-        return {**s, "sql_result": result, "sql_done": True}
-    except Exception as exc:
-        print(f"SQL agent error: {exc}\n")
-        return {**s, "error": f"SQL agent error: {exc}"}
+        res = await sql_tool.ainvoke({"state": {**s, "input": _normalize_dates(s["query"])}})
+        _dbg("SQL-RAW", res)
+        return {**s, "sql_result": _extract_output(res), "sql_done": True}
+    except Exception as e:
+        _dbg("SQL-ERR", e)
+        return {**s, "error": f"SQL agent error: {e}", "sql_done": True, "need_sql": False}
 
-
-def agent_news_node(s: AgentState) -> AgentState:
-    print("\n>>> EXECUTING NEWS AGENT NODE <<<")
+async def agent_news_node(s: AgentState) -> AgentState:
+    _dbg("NEWS-IN", s)
     try:
-        symbol = s.get("last_ticker")
-        if not symbol:
-            return {**s, "error": "News agent error: Could not identify a ticker."}
-        result = run_news_agent({"input": f"latest news for {symbol}"}).get("output", "")
-        print(f"News agent result: {result[:100]}...\n")
-        return {**s, "news_result": result, "news_done": True}
-    except Exception as exc:
-        print(f"News agent error: {exc}\n")
-        return {**s, "error": f"News agent error: {exc}"}
+        ticker = s.get("last_ticker") or "AAPL"
+        res = await news_tool.ainvoke({"state": {"input": f"latest news for {ticker}", **s}})
+        _dbg("NEWS-RAW", res)
+        return {**s, "news_result": _extract_output(res), "news_done": True}
+    except Exception as e:
+        _dbg("NEWS-ERR", e)
+        return {**s, "error": f"News agent error: {e}", "news_done": True, "need_news": False}
 
+async def agent_fallback_node(s: AgentState) -> AgentState:
+    res = await fb_tool.ainvoke({"state": {"input": s["query"]}})
+    return {**s, "sql_result": _extract_output(res), "sql_done": True, "news_done": True}
 
-def agent_fallback_node(s: AgentState) -> AgentState:
-    print("\n>>> EXECUTING FALLBACK AGENT NODE <<<")
-    try:
-        result = run_fallback_agent({"input": s["query"]}).get("output", "")
-        return {**s, "sql_result": result, "sql_done": True, "news_done": True}
-    except Exception as exc:
-        return {**s, "error": f"Fallback agent error: {exc}"}
-
-
-# ─── Synth node ──────────────────────────────────────────────────────────
+# ─── Synth node ─────────────────────────────────────────────────────────
 _SYNTH_PROMPT = PromptTemplate.from_template("""
 You are compiling the final answer for the user.
 The variables below already contain the fetched data. **Use them verbatim.**
@@ -277,93 +216,64 @@ News data returned (markdown):
    - If news data is empty, omit the header entirely.
 """)
 
-
-
-
 def synth_node(s: AgentState) -> AgentState:
-    print("\n--- ENTERING SYNTH NODE ---")
+    _dbg("SYNTH-IN", s)
+
+    def _pretty_stock(val):
+        if isinstance(val, str) and val.startswith("[("):   # "[(199.175,)]"
+            try:
+                num = float(val.strip("[() ,]"))
+                return f"On {s['last_date']}, {s['last_ticker']} closed at ${num:.2f}."
+            except Exception:
+                pass
+        return val or "No stock info."
+    
     if s.get("error"):
         answer = f"Sorry – {s['error']}"
     else:
-        stock = s.get("sql_result") or "No stock info found."
-        news = s.get("news_result") or ""
-        print(f"Synthesizing final answer with stock: '{stock}' and news: '{news[:100]}...'")
         answer = (_SYNTH_PROMPT | _LLM).invoke(
-            {"q": s["query"], "sql": stock, "news": news}
+            {
+                "q": s["query"],
+                "sql": _pretty_stock(s.get("sql_result")),   # ← use helper
+                "news": s.get("news_result") or "",
+            }
         ).content.strip()
+    _dbg("SYNTH-OUT", answer)
+    chat = s.get("chat_history", []) + [HumanMessage(content=s["query"]), AIMessage(content=answer)]
+    last_date = re.search(r"\d{4}-\d{2}-\d{2}", _normalize_dates(s["query"]))
+    return {**s, "answer": answer, "chat_history": chat,
+            "last_date": last_date.group() if last_date else s.get("last_date"),
+            "sql_done": True, "news_done": True}
 
-    print("[DEBUG] Final synthesized answer:", answer)
-
-
-    # update memory
-    chat = s.get("chat_history", [])
-    chat += [HumanMessage(content=s["query"]), AIMessage(content=answer)]
-
-    # remember latest date, if any
-    date_match = re.search(r"\d{4}-\d{2}-\d{2}", _normalize_dates(s["query"]))
-    last_date = date_match.group() if date_match else s.get("last_date")
-
-    return {
-        **s,
-        "answer": answer,
-        "chat_history": chat,
-        "last_date": last_date,
-        "sql_done": True,
-        "news_done": True,
-    }
-
-
-# ─── Build graph ─────────────────────────────────────────────────────────
+# ─── Build graph ────────────────────────────────────────────────────────
 workflow = StateGraph(AgentState)
 workflow.add_node("router", router_node)
-workflow.add_node("agent_sql", agent_sql_node)
-workflow.add_node("agent_news", agent_news_node)
-workflow.add_node("agent_fallback", agent_fallback_node)
+workflow.add_node("agent_sql", agent_sql_node, is_async=True)
+workflow.add_node("agent_news", agent_news_node, is_async=True)
+workflow.add_node("agent_fallback", agent_fallback_node, is_async=True)
 workflow.add_node("synth", synth_node)
 
 workflow.set_entry_point("router")
-workflow.add_conditional_edges(
-    "router",
-    decide_next,
-    {
-        "agent_sql": "agent_sql",
-        "agent_news": "agent_news",
-        "agent_fallback": "agent_fallback",
-        "synth": "synth",
-    },
-)
-for leaf in ("agent_sql", "agent_news", "agent_fallback"):
+workflow.add_conditional_edges("router", decide_next,
+    {"agent_sql":"agent_sql","agent_news":"agent_news",
+     "agent_fallback":"agent_fallback","synth":"synth"})
+for leaf in ("agent_sql","agent_news","agent_fallback"):
     workflow.add_edge(leaf, "router")
 workflow.add_edge("synth", END)
 workflow = workflow.compile()
 
-
-# ─── CLI runner for quick tests ─────────────────────────────────────────
-def run_query_once(question: str):
-    init: AgentState = {
-        "query": question,
-        "chat_history": [],
-        "last_ticker": None,
-        "last_date": None,
-        "last_query": None,   # ← initialise
-        "need_sql": False,
-        "need_news": False,
-        "sql_done": False,
-        "news_done": False,
-        "sql_result": None,
-        "news_result": None,
-        "answer": None,
-        "error": None,
-    }
+# ─── CLI helper ─────────────────────────────────────────────────────────
+def run_query_once(question: str) -> str:
+    init: AgentState = {"query": question, "chat_history": [],
+        "last_ticker": None, "last_date": None, "last_query": None,
+        "need_sql": False, "need_news": False, "sql_done": False, "news_done": False,
+        "sql_result": None, "news_result": None, "answer": None, "error": None}
     return workflow.invoke(init)["answer"]
-
 
 if __name__ == "__main__":
     import sys
-
     if len(sys.argv) > 1:
-        q = " ".join(sys.argv[1:])
-        print(run_query_once(q))
+        print(run_query_once(" ".join(sys.argv[1:])))
     else:
         print("Interactive chat – type 'quit' to exit")
         state = None

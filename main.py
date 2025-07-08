@@ -1,8 +1,6 @@
-from fastapi import FastAPI
-from langgraph.fastapi import add_routes
-
-# 1️⃣  import the compiled LangGraph object from graph.py
-from graph import workflow
+# main.py
+from fastapi import FastAPI, Request
+from graph import workflow   # ← your compiled StateGraph
 
 app = FastAPI(
     title="SQL Agent Demo (Gemma)",
@@ -10,12 +8,16 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# 2️⃣  Mount the LangGraph routes:
-#     /chat  – POST {"input": "..."} → assistant response
-#     /graph – interactive graph+console UI
-add_routes(app, workflow)          # path_prefix defaults to "/"
+@app.post("/chat")
+async def chat(request: Request):
+    # 1️⃣ Read the incoming JSON body
+    payload = await request.json()                          
+    query   = payload.get("input") or payload.get("query") or ""
+    # 2️⃣ Invoke your LangGraph workflow
+    result  = workflow.invoke({"query": query})
+    # 3️⃣ Return exactly what the graph produced
+    return {"answer": result["answer"]}
 
-# 3️⃣  Your own sanity-check endpoints
 @app.get("/")
 def read_root():
     return {"message": "Hello, your API is running!"}
