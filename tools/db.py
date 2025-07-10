@@ -16,13 +16,23 @@ def get_sql_agent_chain():
 
     db = SQLDatabase.from_uri(DB_URI)
 
+    # Monkey-patch the .run() method
+    def run_with_columns(self, command: str) -> dict:
+        with self._engine.connect() as connection:
+            result = connection.execute(command)
+            rows = result.fetchall()
+            columns = result.keys()
+            return {
+                "columns": list(columns),
+                "rows": [list(row) for row in rows]
+            }
+
+    db.run = run_with_columns.__get__(db)
+
     llm = ChatOllama(model=os.getenv("LLM_MODEL"), temperature=0)
-
     toolkit = SQLDatabaseToolkit(db=db, llm=llm)
-
     agent = create_sql_agent(llm=llm, toolkit=toolkit)
 
-    # We'll return an object with the LLM, db, and schema info.
     class SqlAgentChain:
         def __init__(self, llm, db, input_schema):
             self.llm = llm
