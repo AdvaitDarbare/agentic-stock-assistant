@@ -1,0 +1,11 @@
+{
+    "mcpServers": {
+      "postgres-stocks": {
+        "command": "mcp-server-postgres",
+        "args": [
+          "postgresql://postgres:secret@localhost:5432/agentic_stock"
+        ],
+        "env": {}
+      }
+    }
+  }

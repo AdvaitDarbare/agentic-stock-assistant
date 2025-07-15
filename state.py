@@ -9,10 +9,13 @@ class AgentState(TypedDict):
     query: str
     need_sql: bool
     need_news: bool
+    need_sentiment: bool  # NEW: Whether sentiment analysis is needed
     sql_done: bool
     news_done: bool
+    sentiment_done: bool  # NEW: Whether sentiment analysis is complete
     sql_result: Optional[str]
     news_result: Optional[str]
+    sentiment_result: Optional[str]  # NEW: Sentiment analysis results
     answer: Optional[str]
     error: Optional[str]
     chat_history: List[HumanMessage | AIMessage]

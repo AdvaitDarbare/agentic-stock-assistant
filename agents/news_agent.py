@@ -251,14 +251,11 @@ def run_news_agent(state: AgentState) -> AgentState:
     # Format response
     formatted_response = format_news_response(ticker, query, recent, similar)
     
-    # Convert to string for compatibility with the synthesis layer
-    output_str = str(formatted_response)
-    
-    _dbg("FINAL-OUTPUT", output_str)
+    _dbg("FINAL-OUTPUT", formatted_response)
     
     return {
         **state,
-        "output": output_str,
+        "output": formatted_response,
         "next_node": None,
     }
 

@@ -12,3 +12,6 @@ __pycache__/
 # VSCode & Mac system files
 .vscode/
 .DS_Store
+
+# LangGraph API cache
+.langgraph_api/
