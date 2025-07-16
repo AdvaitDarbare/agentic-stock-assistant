@@ -14,10 +14,10 @@ def start_server(script_path, port, name):
     
     # Start server in background
     process = subprocess.Popen(
-        [sys.executable, script_path],
+        [sys.executable, "-m", script_path.replace("/", ".").replace(".py", "")],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        cwd=os.path.dirname(script_path)
+        cwd=os.getcwd()
     )
     
     # Give it a moment to start
@@ -27,7 +27,7 @@ def start_server(script_path, port, name):
         print(f"✅ {name} server started successfully (PID: {process.pid})")
         return process
     else:
-        stdout, stderr = process.communicate()
+        _, stderr = process.communicate()
         print(f"❌ Failed to start {name} server")
         print(f"Error: {stderr.decode()}")
         return None

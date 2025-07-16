@@ -11,7 +11,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - sql-agent-demo-gemma_db_data:/var/lib/postgresql/data
 
   api:
     build:
@@ -29,4 +29,5 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000
 
 volumes:
-  db_data:
+  sql-agent-demo-gemma_db_data:
+    external: true

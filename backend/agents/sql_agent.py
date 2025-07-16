@@ -17,7 +17,7 @@ import mlflow.langchain  # keeps LangChain autolog active
 
 from tools.db import get_sql_agent_chain
 from state import AgentState
-from ticker_map import ticker_map
+from tests.ticker_map import ticker_map
 
 
 # ─── DEBUG LOGGER ────────────────────────────────────────────────────────

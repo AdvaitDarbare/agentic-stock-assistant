@@ -1,0 +1,17 @@
+# Ignore Python environment
+.venv/
+__pycache__/
+*.pyc
+
+# Ignore env files and secrets
+.env
+
+# LangGraph Studio cache (if any)
+.langgraph/
+
+# VSCode & Mac system files
+.vscode/
+.DS_Store
+
+# LangGraph API cache
+.langgraph_api/

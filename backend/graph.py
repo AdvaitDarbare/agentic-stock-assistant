@@ -374,12 +374,7 @@ async def _init_mcp_tools():
             print(f"Warning: Failed to initialize MCP tools: {e}", file=sys.stderr)
             print("MCP servers may not be running. Some functionality will be limited.", file=sys.stderr)
 
-# Only initialize MCP tools if this file is imported as main graph module
-if __name__ == "__main__" or "graph" in __name__:
-    try:
-        asyncio.run(_init_mcp_tools())
-    except Exception as e:
-        print(f"Warning: MCP initialization failed: {e}", file=sys.stderr)
+
 
 # ─── Helpers ────────────────────────────────────────────────────────────
 _US_DATE_RE = re.compile(r"\b(0?[1-9]|1[0-2])[/-](0?[1-9]|[12][0-9]|3[01])[/-](20\d{2})\b")
@@ -391,7 +386,7 @@ def _normalize_dates(text: str) -> str:
     return result
 
 # Import the comprehensive ticker map
-from ticker_map import ticker_map as TICKER_MAP
+from tests.ticker_map import ticker_map as TICKER_MAP
 
 def _extract_ticker(q: str) -> str:
     """Extract ticker from query, prioritizing explicit formats like $AAPL"""
