@@ -514,7 +514,13 @@ if __name__ == "__main__":
         description="Execute SQL queries against stock price data"
     )
     def _tool(state: dict) -> dict:
-        return run_sql_agent(state)
+        # Handle both wrapped and unwrapped state parameters
+        if isinstance(state, dict) and "state" in state:
+            # If state is wrapped in another state dict, unwrap it
+            return run_sql_agent(state["state"])
+        else:
+            # Direct state parameter
+            return run_sql_agent(state)
 
     _dbg("SERVER-STARTING", "SQL Agent MCP Server starting on port 8010")
     mcp.run(transport="streamable-http")

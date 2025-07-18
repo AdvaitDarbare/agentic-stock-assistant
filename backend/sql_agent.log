@@ -1,0 +1,399 @@
+
+### SQL-SERVER-STARTING
+SQL Agent MCP Server starting on port 8010
+
+INFO:     Started server process [47782]
+INFO:     Waiting for application startup.
+[07/18/25 14:17:35] INFO     StreamableHTTP       streamable_http_manager.py:112
+                             session manager                                    
+                             started                                            
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8010 (Press CTRL+C to quit)
+[07/18/25 14:17:43] INFO     Processing request of type            server.py:619
+                             CallToolRequest                                    
+
+### SQL-INPUT-STATE
+{'input': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11', 'chat_history': [], 'current_date': '2025-07-18'}
+
+
+### SQL-EXTRACTED-CONTEXT
+{'query': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11', 'tickers': ['AAPL'], 'dates': ['2025-06-06', '2025-06-11'], 'is_range': True, 'is_correlation_query': False}
+
+[07/18/25 14:17:47] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-QUERY-ANALYSIS-RAW
+```json
+{
+  "columns": ["date", "open"],
+  "date_filter": "range",
+  "ticker_required": true,
+  "intent": "open price for specified date range"
+}
+```
+
+
+### SQL-QUERY-ANALYSIS-PARSED
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+
+### SQL-QUERY-INTENT
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+[07/18/25 14:18:15] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-SQL-GENERATION-RAW
+```sql
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE
+  ticker = 'AAPL'
+  AND date BETWEEN '2025-06-06' AND '2025-06-11'
+```
+
+
+### SQL-SQL-GENERATION-CLEANED
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-GENERATED-SQL
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-DB-EXECUTE-RESULT
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-ROWS
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-ROWS
+[['2025-06-06', 203.0], ['2025-06-09', 204.39], ['2025-06-10', 200.6], ['2025-06-11', 203.5]]
+
+
+### SQL-RESULT-TABLE
+
+date       | open  
+-----------+-------
+2025-06-06 | 203.0 
+2025-06-09 | 204.39
+2025-06-10 | 200.6 
+2025-06-11 | 203.5 
+
+[07/18/25 14:18:16] INFO     Warning: SAWarning: Did not recognize server.py:609
+                             type 'vector' of column 'embedding'                
+INFO:     127.0.0.1:51473 - "POST /mcp/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51531 - "GET / HTTP/1.1" 404 Not Found
+[07/18/25 14:18:22] INFO     Processing request of type            server.py:619
+                             CallToolRequest                                    
+
+### SQL-INPUT-STATE
+{'input': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11', 'chat_history': [], 'current_date': '2025-07-18', 'ticker': 'AAPL', 'dates': ['2025-06-06', '2025-06-11'], 'is_range_query': True}
+
+
+### SQL-EXTRACTED-CONTEXT
+{'query': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11', 'tickers': ['AAPL'], 'dates': ['2025-06-06', '2025-06-11'], 'is_range': True, 'is_correlation_query': False}
+
+[07/18/25 14:18:24] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-QUERY-ANALYSIS-RAW
+```json
+{
+  "columns": ["date", "open"],
+  "date_filter": "range",
+  "ticker_required": true,
+  "intent": "open price for specified date range"
+}
+```
+
+
+### SQL-QUERY-ANALYSIS-PARSED
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+
+### SQL-QUERY-INTENT
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+[07/18/25 14:18:52] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-SQL-GENERATION-RAW
+```sql
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE
+  ticker = 'AAPL'
+  AND date BETWEEN '2025-06-06' AND '2025-06-11'
+```
+
+
+### SQL-SQL-GENERATION-CLEANED
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-GENERATED-SQL
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-DB-EXECUTE-RESULT
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-ROWS
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-ROWS
+[['2025-06-06', 203.0], ['2025-06-09', 204.39], ['2025-06-10', 200.6], ['2025-06-11', 203.5]]
+
+
+### SQL-RESULT-TABLE
+
+date       | open  
+-----------+-------
+2025-06-06 | 203.0 
+2025-06-09 | 204.39
+2025-06-10 | 200.6 
+2025-06-11 | 203.5 
+
+[07/18/25 14:18:53] INFO     Warning: SAWarning: Did not recognize server.py:609
+                             type 'vector' of column 'embedding'                
+INFO:     127.0.0.1:51632 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51649 - "GET / HTTP/1.1" 404 Not Found
+[07/18/25 14:19:12] INFO     Processing request of type            server.py:619
+                             CallToolRequest                                    
+
+### SQL-INPUT-STATE
+{'input': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11', 'chat_history': [], 'current_date': '2025-07-18', 'ticker': 'AAPL', 'dates': ['2025-06-06', '2025-06-11'], 'is_range_query': True}
+
+
+### SQL-EXTRACTED-CONTEXT
+{'query': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11', 'tickers': ['AAPL'], 'dates': ['2025-06-06', '2025-06-11'], 'is_range': True, 'is_correlation_query': False}
+
+[07/18/25 14:19:16] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-QUERY-ANALYSIS-RAW
+```json
+{
+  "columns": ["date", "open"],
+  "date_filter": "range",
+  "ticker_required": true,
+  "intent": "open price for specified date range"
+}
+```
+
+
+### SQL-QUERY-ANALYSIS-PARSED
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+
+### SQL-QUERY-INTENT
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+[07/18/25 14:19:43] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-SQL-GENERATION-RAW
+```sql
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE
+  ticker = 'AAPL'
+  AND date BETWEEN '2025-06-06' AND '2025-06-11'
+```
+
+
+### SQL-SQL-GENERATION-CLEANED
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-GENERATED-SQL
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-DB-EXECUTE-RESULT
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-ROWS
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-ROWS
+[['2025-06-06', 203.0], ['2025-06-09', 204.39], ['2025-06-10', 200.6], ['2025-06-11', 203.5]]
+
+
+### SQL-RESULT-TABLE
+
+date       | open  
+-----------+-------
+2025-06-06 | 203.0 
+2025-06-09 | 204.39
+2025-06-10 | 200.6 
+2025-06-11 | 203.5 
+
+[07/18/25 14:19:45] INFO     Warning: SAWarning: Did not recognize server.py:609
+                             type 'vector' of column 'embedding'                
+INFO:     127.0.0.1:51657 - "POST /mcp/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51760 - "GET / HTTP/1.1" 404 Not Found
+INFO:     127.0.0.1:51780 - "GET / HTTP/1.1" 404 Not Found
+[07/18/25 14:20:33] INFO     Processing request of type            server.py:619
+                             CallToolRequest                                    
+
+### SQL-INPUT-STATE
+{'input': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11 \n', 'chat_history': [], 'current_date': '2025-07-18', 'ticker': 'AAPL', 'dates': ['2025-06-06', '2025-06-11'], 'is_range_query': True}
+
+
+### SQL-EXTRACTED-CONTEXT
+{'query': 'Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11', 'tickers': ['AAPL'], 'dates': ['2025-06-06', '2025-06-11'], 'is_range': True, 'is_correlation_query': False}
+
+[07/18/25 14:20:37] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-QUERY-ANALYSIS-RAW
+```json
+{
+  "columns": ["date", "open"],
+  "date_filter": "range",
+  "ticker_required": true,
+  "intent": "open price for specified date range"
+}
+```
+
+
+### SQL-QUERY-ANALYSIS-PARSED
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+
+### SQL-QUERY-INTENT
+{'columns': ['date', 'open'], 'date_filter': 'range', 'ticker_required': True, 'intent': 'open price for specified date range'}
+
+[07/18/25 14:21:05] INFO     HTTP Request: POST                  _client.py:1025
+                             http://127.0.0.1:11434/api/chat                    
+                             "HTTP/1.1 200 OK"                                  
+
+### SQL-SQL-GENERATION-RAW
+```sql
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE
+  ticker = 'AAPL'
+  AND date BETWEEN '2025-06-06' AND '2025-06-11'
+```
+
+
+### SQL-SQL-GENERATION-CLEANED
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-GENERATED-SQL
+SELECT
+  date,
+  open
+FROM stock_data
+WHERE ticker = 'AAPL' AND date BETWEEN '2025-06-06' AND '2025-06-11'
+
+
+### SQL-DB-EXECUTE-RESULT
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-ROWS
+[{'date': datetime.date(2025, 6, 6), 'open': 203.0}, {'date': datetime.date(2025, 6, 9), 'open': 204.39}, {'date': datetime.date(2025, 6, 10), 'open': 200.6}, {'date': datetime.date(2025, 6, 11), 'open': 203.5}]
+
+
+### SQL-DB-RESULT-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-COLUMNS
+['date', 'open']
+
+
+### SQL-FORMATTED-ROWS
+[['2025-06-06', 203.0], ['2025-06-09', 204.39], ['2025-06-10', 200.6], ['2025-06-11', 203.5]]
+
+
+### SQL-RESULT-TABLE
+
+date       | open  
+-----------+-------
+2025-06-06 | 203.0 
+2025-06-09 | 204.39
+2025-06-10 | 200.6 
+2025-06-11 | 203.5 
+
+[07/18/25 14:21:07] INFO     Warning: SAWarning: Did not recognize server.py:609
+                             type 'vector' of column 'embedding'                
+INFO:     127.0.0.1:51814 - "POST /mcp/ HTTP/1.1" 200 OK

@@ -301,11 +301,11 @@ class FastMCPClient:
             "fb": "http://localhost:8030",
             "sentiment": "http://localhost:8040"
         }
-        self.client = httpx.AsyncClient(timeout=30.0, follow_redirects=True)
+        self.client = httpx.AsyncClient(timeout=60.0, follow_redirects=True)
     
     async def call_tool(self, server: str, tool_name: str, data: Dict[str, Any]) -> Dict[str, Any]:
         """Call a tool on a FastMCP server"""
-        url = f"{self.servers[server]}/mcp"
+        url = f"{self.servers[server]}/mcp/"
         
         # Create MCP request format
         mcp_request = {
