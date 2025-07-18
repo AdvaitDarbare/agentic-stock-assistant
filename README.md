@@ -2,7 +2,7 @@
 
 Intelligent financial analysis with real-time stock data, news insights, and sentiment analysis powered by multi-agent LangGraph workflows.
 
-![System Architecture](backend/images/system_architecture.png)
+![System Architecture](backend/images/langgraph-workflow.png)
 
 ## 🚀 Quick Start
 
