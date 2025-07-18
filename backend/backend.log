@@ -1,0 +1,1218 @@
+INFO:     Will watch for changes in these directories: ['/Users/advaitdarbare/Desktop/sql-agent-demo-Gemma/backend']
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [70242] using WatchFiles
+⚠️  MLflow autolog setup failed: module 'mlflow.tracing.fluent' has no attribute 'enable'
+INFO:     Started server process [70245]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+
+[17:22:10] === ROUTER-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'latest price of AAPL',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': None,
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': False,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'latest price of AAPL',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': False,
+ 'sql_result': None}
+----------------------------------------
+
+[17:22:10] === ROUTING-INPUT ===
+{'cleaned_query': 'latest price of aapl', 'original_query': 'latest price of AAPL'}
+----------------------------------------
+
+[17:22:10] === KEYWORD-ROUTING-ANALYSIS ===
+{'decision': {'need_news': True, 'need_sentiment': True, 'need_sql': True},
+ 'has_news': True,
+ 'has_price': True,
+ 'has_sentiment': True,
+ 'news_keywords_found': ['latest'],
+ 'price_keywords_found': ['price'],
+ 'query': 'latest price of AAPL',
+ 'sentiment_keywords_found': []}
+----------------------------------------
+
+[17:22:10] === FINAL-ROUTING-DECISION ===
+{'need_news': True, 'need_sentiment': True, 'need_sql': True}
+----------------------------------------
+
+[17:22:10] === ROUTER-RESET ===
+{'current_query': 'latest price of AAPL', 'previous_query': None, 'reason': 'new_query'}
+----------------------------------------
+
+[17:22:10] === ROUTER-OUT ===
+{'is_initial': True,
+ 'is_new_query': True,
+ 'last_query': 'latest price of AAPL',
+ 'need_news': True,
+ 'need_sentiment': True,
+ 'need_sql': True,
+ 'news_done': False,
+ 'query': 'latest price of AAPL',
+ 'sentiment_done': False,
+ 'sql_done': False}
+----------------------------------------
+
+[17:22:10] === DECIDE-NEXT-INPUT ===
+{'error': None,
+ 'need_news': True,
+ 'need_sentiment': True,
+ 'need_sql': True,
+ 'news_done': False,
+ 'sentiment_done': False,
+ 'sql_done': False}
+----------------------------------------
+
+[17:22:10] === DECIDE-NEXT-RESULT ===
+'agent_sql'
+----------------------------------------
+2025/07/17 17:22:10 WARNING mlflow.tracing.export.async_export_queue: Failed to log trace to MLflow backend. Error: [Errno 30] Read-only file system: '/mlflow'.
+✅ FastAPI server started with LangGraph persistence
+🏃 View run illustrious-grub-780 at: http://localhost:5001/#/experiments/1/runs/74de9c34cb4743b99132cac7a21ce6ac
+🧪 View experiment at: http://localhost:5001/#/experiments/1
+MLFlow tracing error: Expected dict, got <coroutine object agent_sql_node at 0x147bbed40>
+For troubleshooting, visit: https://python.langchain.com/docs/troubleshooting/errors/INVALID_GRAPH_NODE_RETURN_VALUE
+🏃 View run likeable-ram-821 at: http://localhost:5001/#/experiments/1/runs/4200bb690e3d417ab81b00b4291898c4
+🧪 View experiment at: http://localhost:5001/#/experiments/1
+Error in chat endpoint: generator didn't stop after throw()
+INFO:     127.0.0.1:53544 - "POST /chat HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70245]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [70713]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70713]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [70727]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70727]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [70840]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70840]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [70855]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70855]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [70968]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70968]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [70979]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [70979]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [71092]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+
+[17:23:13] === ROUTER-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test MLFlow tracing',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': None,
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': False,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test MLFlow tracing',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': False,
+ 'sql_result': None}
+----------------------------------------
+
+[17:23:13] === ROUTING-INPUT ===
+{'cleaned_query': 'test mlflow tracing', 'original_query': 'test MLFlow tracing'}
+----------------------------------------
+
+[17:23:13] === KEYWORD-ROUTING-ANALYSIS ===
+{'decision': {'need_news': False, 'need_sentiment': False, 'need_sql': True},
+ 'has_news': False,
+ 'has_price': True,
+ 'has_sentiment': False,
+ 'news_keywords_found': [],
+ 'price_keywords_found': ['low'],
+ 'query': 'test MLFlow tracing',
+ 'sentiment_keywords_found': []}
+----------------------------------------
+
+[17:23:13] === FINAL-ROUTING-DECISION ===
+{'need_news': False, 'need_sentiment': False, 'need_sql': True}
+----------------------------------------
+
+[17:23:13] === ROUTER-RESET ===
+{'current_query': 'test MLFlow tracing', 'previous_query': None, 'reason': 'new_query'}
+----------------------------------------
+
+[17:23:13] === ROUTER-OUT ===
+{'is_initial': True,
+ 'is_new_query': True,
+ 'last_query': 'test MLFlow tracing',
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'query': 'test MLFlow tracing',
+ 'sentiment_done': False,
+ 'sql_done': False}
+----------------------------------------
+
+[17:23:13] === DECIDE-NEXT-INPUT ===
+{'error': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'sentiment_done': False,
+ 'sql_done': False}
+----------------------------------------
+
+[17:23:13] === DECIDE-NEXT-RESULT ===
+'agent_sql'
+----------------------------------------
+
+[17:23:13] === SQL-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test MLFlow tracing',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': 'test MLFlow tracing',
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test MLFlow tracing',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': False,
+ 'sql_result': None}
+----------------------------------------
+
+[17:23:13] === DATE-NORMALIZATION ===
+"Input: 'test MLFlow tracing' -> Output: 'test MLFlow tracing'"
+----------------------------------------
+
+[17:23:32] === SQL-RAW ===
+{'content': [{'text': '{\n'
+                      '  "input": "test MLFlow tracing",\n'
+                      '  "chat_history": [\n'
+                      '    {\n'
+                      '      "content": "test MLFlow tracing",\n'
+                      '      "additional_kwargs": {},\n'
+                      '      "response_metadata": {},\n'
+                      '      "type": "human",\n'
+                      '      "name": null,\n'
+                      '      "id": null,\n'
+                      '      "example": false\n'
+                      '    },\n'
+                      '    {\n'
+                      '      "content": "Executed SQL query and returned 10 rows",\n'
+                      '      "additional_kwargs": {},\n'
+                      '      "response_metadata": {},\n'
+                      '      "type": "ai",\n'
+                      '      "name": null,\n'
+                      '      "id": null,\n'
+                      '      "example": false,\n'
+                      '      "tool_calls": [],\n'
+                      '      "invalid_tool_calls": [],\n'
+                      '      "usage_metadata": null\n'
+                      '    }\n'
+                      '  ],\n'
+                      '  "current_date": "2025-07-17",\n'
+                      '  "ticker": null,\n'
+                      '  "dates": [],\n'
+                      '  "is_range_query": false,\n'
+                      '  "last_tickers": [],\n'
+                      '  "output": {\n'
+                      '    "sql": "SELECT ticker, date, open, close\\nFROM stock_data\\nORDER BY date '
+                      'DESC\\nLIMIT 10",\n'
+                      '    "table": {\n'
+                      '      "columns": [\n'
+                      '        "ticker",\n'
+                      '        "date",\n'
+                      '        "open",\n'
+                      '        "close"\n'
+                      '      ],\n'
+                      '      "rows": [\n'
+                      '        [\n'
+                      '          "ADI",\n'
+                      '          "2025-06-20",\n'
+                      '          231.745,\n'
+                      '          228.35\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "BKNG",\n'
+                      '          "2025-06-20",\n'
+                      '          5378.0,\n'
+                      '          5304.03\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "CCEP",\n'
+                      '          "2025-06-20",\n'
+                      '          93.57,\n'
+                      '          92.57\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "MSTR",\n'
+                      '          "2025-06-20",\n'
+                      '          372.75,\n'
+                      '          369.82\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "PDD",\n'
+                      '          "2025-06-20",\n'
+                      '          102.68,\n'
+                      '          101.26\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "PEP",\n'
+                      '          "2025-06-20",\n'
+                      '          129.53,\n'
+                      '          129.07\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "ISRG",\n'
+                      '          "2025-06-20",\n'
+                      '          514.7,\n'
+                      '          509.36\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "GILD",\n'
+                      '          "2025-06-20",\n'
+                      '          108.85,\n'
+                      '          108.632\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "CSCO",\n'
+                      '          "2025-06-20",\n'
+                      '          66.49,\n'
+                      '          66.32\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "COIN",\n'
+                      '          "2025-06-20",\n'
+                      '          303.58,\n'
+                      '          308.58\n'
+                      '        ]\n'
+                      '      ]\n'
+                      '    }\n'
+                      '  },\n'
+                      '  "next_node": null\n'
+                      '}',
+              'type': 'text'}],
+ 'isError': False}
+----------------------------------------
+
+[17:23:32] === ROUTER-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test MLFlow tracing',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': 'test MLFlow tracing',
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test MLFlow tracing',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': True,
+ 'sql_result': {'sql': 'SELECT ticker, date, open, close\nFROM stock_data\nORDER BY date DESC\nLIMIT 10',
+                'table': {'columns': ['ticker', 'date', 'open', 'close'],
+                          'rows': [['ADI', '2025-06-20', 231.745, 228.35],
+                                   ['BKNG', '2025-06-20', 5378.0, 5304.03],
+                                   ['CCEP', '2025-06-20', 93.57, 92.57],
+                                   ['MSTR', '2025-06-20', 372.75, 369.82],
+                                   ['PDD', '2025-06-20', 102.68, 101.26],
+                                   ['PEP', '2025-06-20', 129.53, 129.07],
+                                   ['ISRG', '2025-06-20', 514.7, 509.36],
+                                   ['GILD', '2025-06-20', 108.85, 108.632],
+                                   ['CSCO', '2025-06-20', 66.49, 66.32],
+                                   ['COIN', '2025-06-20', 303.58, 308.58]]}}}
+----------------------------------------
+
+[17:23:32] === ROUTER-OUT ===
+{'is_initial': False,
+ 'is_new_query': False,
+ 'last_query': 'test MLFlow tracing',
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'query': 'test MLFlow tracing',
+ 'sentiment_done': False,
+ 'sql_done': True}
+----------------------------------------
+
+[17:23:32] === DECIDE-NEXT-INPUT ===
+{'error': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'sentiment_done': False,
+ 'sql_done': True}
+----------------------------------------
+
+[17:23:32] === DECIDE-NEXT-RESULT ===
+'synth'
+----------------------------------------
+
+[17:23:32] === SYNTH-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test MLFlow tracing',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': 'test MLFlow tracing',
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test MLFlow tracing',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': True,
+ 'sql_result': {'sql': 'SELECT ticker, date, open, close\nFROM stock_data\nORDER BY date DESC\nLIMIT 10',
+                'table': {'columns': ['ticker', 'date', 'open', 'close'],
+                          'rows': [['ADI', '2025-06-20', 231.745, 228.35],
+                                   ['BKNG', '2025-06-20', 5378.0, 5304.03],
+                                   ['CCEP', '2025-06-20', 93.57, 92.57],
+                                   ['MSTR', '2025-06-20', 372.75, 369.82],
+                                   ['PDD', '2025-06-20', 102.68, 101.26],
+                                   ['PEP', '2025-06-20', 129.53, 129.07],
+                                   ['ISRG', '2025-06-20', 514.7, 509.36],
+                                   ['GILD', '2025-06-20', 108.85, 108.632],
+                                   ['CSCO', '2025-06-20', 66.49, 66.32],
+                                   ['COIN', '2025-06-20', 303.58, 308.58]]}}}
+----------------------------------------
+
+[17:23:32] === FORMATTED-TABLE ===
+('\n'
+ '| ticker |    date    |   open  |  close  |\n'
+ '|--------|------------|---------|---------|\n'
+ '| ADI    | 2025-06-20 | 231.745 | 228.35  |\n'
+ '| BKNG   | 2025-06-20 | 5378.0  | 5304.03 |\n'
+ '| CCEP   | 2025-06-20 | 93.57   | 92.57   |\n'
+ '| MSTR   | 2025-06-20 | 372.75  | 369.82  |\n'
+ '| PDD    | 2025-06-20 | 102.68  | 101.26  |\n'
+ '| PEP    | 2025-06-20 | 129.53  | 129.07  |\n'
+ '| ISRG   | 2025-06-20 | 514.7   | 509.36  |\n'
+ '| GILD   | 2025-06-20 | 108.85  | 108.632 |\n'
+ '| CSCO   | 2025-06-20 | 66.49   | 66.32   |\n'
+ '| COIN   | 2025-06-20 | 303.58  | 308.58  |')
+----------------------------------------
+
+[17:23:32] === SYNTH-CLEANED-DATA ===
+{'dates': '',
+ 'has_table': True,
+ 'news': 'No news data',
+ 'sentiment': 'No sentiment analysis available',
+ 'sql': 'SQL Query: SELECT ticker, date, open, close\n'
+        'FROM stock_data\n'
+        'ORDER BY date DESC\n'
+        'LIMIT 10\n'
+        '\n'
+        'Results:\n'
+        '| ticker |    date    |   open  |  close  |\n'
+        '|--------|------------|---------|---------|\n'
+        '| ADI    | 2025-06-20 | 231.745 | 228.35  |\n'
+        '| BKNG   | 2025-06-20 | 5378.0  | 5304.03 |\n'
+        '| CCEP   | 2025-06-20 | 93.57   | 92.57   |\n'
+        '| MSTR   | 2025-06-20 | 372.75  | 369.82  |\n'
+        '| PDD    | 2025-06-20 | 102.68  | 101.26  |\n'
+        '| PEP    | 2025-06-20 | 129.53  | 129.07  |\n'
+        '| ISRG   | 2025-06-20 | 514.7   | 509.36  |\n'
+        '| GILD   | 2025-06-20 | 108.85  | 108.632 |\n'
+        '| CSCO   | 2025-06-20 | 66.49   | 66.32   |\n'
+        '| COIN   | 2025-06-20 | 303.58  | 308.58  |',
+ 'ticker': None}
+----------------------------------------
+
+[17:23:48] === SYNTH-SUCCESS ===
+('Here are the results for None:\n'
+ '\n'
+ '| ticker |    date    |   open  |  close  |\n'
+ '|--------|------------|---------|---------|\n'
+ '| ADI    | 2025-06-20 | 231.745 | 228.35  |\n'
+ '| BKNG   | 2025-06-20 | 5378.0  | 5304.03 |\n'
+ '| CCEP   | 2025-06-20 | 93.57   | 92.57   |\n'
+ '| MSTR   | 2025-06-20 | 372.75  | 369.82  |\n'
+ '| PDD    | 2025-06-20 | 102.68  | 101.26  |\n'
+ '| PEP    | 2025-06-20 | 129.53  | 129.07  |\n'
+ '| ISRG   | 2025-06-20 | 514.7   | 509.36  |\n'
+ '| GILD   | 2025-06-20 | 108.85  | 108.632 |\n'
+ '| CSCO   | 2025-06-20 | 66.49   | 66.32   |\n'
+ '| COIN   | 2025-06-20 | 303.58  | 308.58  |\n'
+ '\n'
+ '## MLFlow Tracing Results - June 20, 2025\n'
+ '\n'
+ '**Ticker:** None\n'
+ '**Dates:** June 20, 2025\n'
+ '\n'
+ '**Financial Data:**\n'
+ '\n'
+ 'The following is a summary of the stock data for the tickers listed, as of June 20, 2025:\n'
+ '\n'
+ '| Ticker | Date       | Open    | Close   |\n'
+ '|--------|------------|---------|---------|\n'
+ '| ADI    | 2025-06-20 | 231.745  | 228.35   |\n'
+ '| BKNG   | 2025-06-20 | 5378.0   | 5304.03  |\n'
+ '| CCEP   | 2025-06-20 | 93.57    | 92.57    |\n'
+ '| MSTR   | 2025-06-20 | 372.75   | 369.82   |\n'
+ '| PDD    | 2025-06-20 | 102.68   | 101.26   |\n'
+ '| PEP    | 2025-06-20 | 129.53   | 129.07   |\n'
+ '| ISRG   | 2025-06-20 | 514.7    | 509.36   |\n'
+ '| GILD   | 2025-06-20 | 108.85   | 108.632  |\n'
+ '| CSCO   | 2025-06-20 | 66.49    | 66.32    |\n'
+ '| COIN   | 2025-06-20 | 303.58   | 308.58   |\n'
+ '\n'
+ '**News Data:**\n'
+ '\n'
+ '*   No news data is available for the specified tickers.\n'
+ '\n'
+ '**Sentiment Analysis:**\n'
+ '\n'
+ '*   No sentiment analysis is available for the specified tickers.\n'
+ '\n'
+ '**Summary:**\n'
+ '\n'
+ 'The provided data shows the closing prices for a list of stocks on June 20, 2025.  No news or sentiment '
+ 'data is available for these stocks at this time.  The data is presented in a clear, tabular format for '
+ 'easy readability.')
+----------------------------------------
+
+[17:23:48] === SYNTH-OUT ===
+('Here are the results for None:\n'
+ '\n'
+ '| ticker |    date    |   open  |  close  |\n'
+ '|--------|------------|---------|---------|\n'
+ '| ADI    | 2025-06-20 | 231.745 | 228.35  |\n'
+ '| BKNG   | 2025-06-20 | 5378.0  | 5304.03 |\n'
+ '| CCEP   | 2025-06-20 | 93.57   | 92.57   |\n'
+ '| MSTR   | 2025-06-20 | 372.75  | 369.82  |\n'
+ '| PDD    | 2025-06-20 | 102.68  | 101.26  |\n'
+ '| PEP    | 2025-06-20 | 129.53  | 129.07  |\n'
+ '| ISRG   | 2025-06-20 | 514.7   | 509.36  |\n'
+ '| GILD   | 2025-06-20 | 108.85  | 108.632 |\n'
+ '| CSCO   | 2025-06-20 | 66.49   | 66.32   |\n'
+ '| COIN   | 2025-06-20 | 303.58  | 308.58  |\n'
+ '\n'
+ '## MLFlow Tracing Results - June 20, 2025\n'
+ '\n'
+ '**Ticker:** None\n'
+ '**Dates:** June 20, 2025\n'
+ '\n'
+ '**Financial Data:**\n'
+ '\n'
+ 'The following is a summary of the stock data for the tickers listed, as of June 20, 2025:\n'
+ '\n'
+ '| Ticker | Date       | Open    | Close   |\n'
+ '|--------|------------|---------|---------|\n'
+ '| ADI    | 2025-06-20 | 231.745  | 228.35   |\n'
+ '| BKNG   | 2025-06-20 | 5378.0   | 5304.03  |\n'
+ '| CCEP   | 2025-06-20 | 93.57    | 92.57    |\n'
+ '| MSTR   | 2025-06-20 | 372.75   | 369.82   |\n'
+ '| PDD    | 2025-06-20 | 102.68   | 101.26   |\n'
+ '| PEP    | 2025-06-20 | 129.53   | 129.07   |\n'
+ '| ISRG   | 2025-06-20 | 514.7    | 509.36   |\n'
+ '| GILD   | 2025-06-20 | 108.85   | 108.632  |\n'
+ '| CSCO   | 2025-06-20 | 66.49    | 66.32    |\n'
+ '| COIN   | 2025-06-20 | 303.58   | 308.58   |\n'
+ '\n'
+ '**News Data:**\n'
+ '\n'
+ '*   No news data is available for the specified tickers.\n'
+ '\n'
+ '**Sentiment Analysis:**\n'
+ '\n'
+ '*   No sentiment analysis is available for the specified tickers.\n'
+ '\n'
+ '**Summary:**\n'
+ '\n'
+ 'The provided data shows the closing prices for a list of stocks on June 20, 2025.  No news or sentiment '
+ 'data is available for these stocks at this time.  The data is presented in a clear, tabular format for '
+ 'easy readability.')
+----------------------------------------
+🧪 MLflow trace flushed and run ended
+2025/07/17 17:23:48 WARNING mlflow.tracing.export.async_export_queue: Failed to log trace to MLflow backend. Error: [Errno 30] Read-only file system: '/mlflow'.
+✅ FastAPI server started with LangGraph persistence
+Node tracing error for router: INVALID_PARAMETER_VALUE: Changing param values is not allowed. Param with key='node_router_summary' was already logged with value='{'node_name': 'router', 'step_number': 1, 'execution_time': 0.06866693496704102, 'timestamp': '2025-07-17T17:23:13.652304', 'input_summary': {'type': 'dict', 'keys': ['args', 'kwargs'], 'size': 2}, 'o...' for run ID='3de56c96573a417f958bd392a2833a30'. Attempted logging new value '{'node_name': 'router', 'step_number': 3, 'execution_time': 0.0003669261932373047, 'timestamp': '2025-07-17T17:23:32.491198', 'input_summary': {'type': 'dict', 'keys': ['args', 'kwargs'], 'size': 2}, ...'.
+
+The cause of this error is typically due to repeated calls
+to an individual run_id event logging.
+
+Incorrect Example:
+---------------------------------------
+with mlflow.start_run():
+    mlflow.log_param("depth", 3)
+    mlflow.log_param("depth", 5)
+---------------------------------------
+
+Which will throw an MlflowException for overwriting a
+logged parameter.
+
+Correct Example:
+---------------------------------------
+with mlflow.start_run():
+    with mlflow.start_run(nested=True):
+        mlflow.log_param("depth", 3)
+    with mlflow.start_run(nested=True):
+        mlflow.log_param("depth", 5)
+---------------------------------------
+
+Which will create a new nested run for each individual
+model and prevent parameter key collisions within the
+tracking store.
+MLFlow operations flushed successfully
+🏃 View run shivering-bug-169 at: http://localhost:5001/#/experiments/1/runs/7a41188ae7e3495faf2d7c9aee91d171
+🧪 View experiment at: http://localhost:5001/#/experiments/1
+INFO:     127.0.0.1:53867 - "POST /chat HTTP/1.1" 200 OK
+WARNING:  WatchFiles detected changes in 'graph.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [71092]
+✅ MLflow autolog and tracing enabled with comprehensive observability
+INFO:     Started server process [72432]
+INFO:     Waiting for application startup.
+✅ MCP servers online: sql
+❌ MCP servers offline: news, fb, sentiment
+💾 Using memory checkpointer for testing
+✅ LangGraph workflow compiled with persistence
+INFO:     Application startup complete.
+
+[17:24:56] === ROUTER-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test new MLFlow traces',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': None,
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': False,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test new MLFlow traces',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': False,
+ 'sql_result': None}
+----------------------------------------
+
+[17:24:56] === ROUTING-INPUT ===
+{'cleaned_query': 'test new mlflow traces', 'original_query': 'test new MLFlow traces'}
+----------------------------------------
+
+[17:24:56] === KEYWORD-ROUTING-ANALYSIS ===
+{'decision': {'need_news': False, 'need_sentiment': False, 'need_sql': True},
+ 'has_news': False,
+ 'has_price': True,
+ 'has_sentiment': False,
+ 'news_keywords_found': [],
+ 'price_keywords_found': ['low'],
+ 'query': 'test new MLFlow traces',
+ 'sentiment_keywords_found': []}
+----------------------------------------
+
+[17:24:56] === FINAL-ROUTING-DECISION ===
+{'need_news': False, 'need_sentiment': False, 'need_sql': True}
+----------------------------------------
+
+[17:24:56] === ROUTER-RESET ===
+{'current_query': 'test new MLFlow traces', 'previous_query': None, 'reason': 'new_query'}
+----------------------------------------
+
+[17:24:56] === ROUTER-OUT ===
+{'is_initial': True,
+ 'is_new_query': True,
+ 'last_query': 'test new MLFlow traces',
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'query': 'test new MLFlow traces',
+ 'sentiment_done': False,
+ 'sql_done': False}
+----------------------------------------
+
+[17:24:56] === DECIDE-NEXT-INPUT ===
+{'error': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'sentiment_done': False,
+ 'sql_done': False}
+----------------------------------------
+
+[17:24:56] === DECIDE-NEXT-RESULT ===
+'agent_sql'
+----------------------------------------
+
+[17:24:56] === SQL-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test new MLFlow traces',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': 'test new MLFlow traces',
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test new MLFlow traces',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': False,
+ 'sql_result': None}
+----------------------------------------
+
+[17:24:56] === DATE-NORMALIZATION ===
+"Input: 'test new MLFlow traces' -> Output: 'test new MLFlow traces'"
+----------------------------------------
+
+[17:25:11] === SQL-RAW ===
+{'content': [{'text': '{\n'
+                      '  "input": "test new MLFlow traces",\n'
+                      '  "chat_history": [\n'
+                      '    {\n'
+                      '      "content": "test new MLFlow traces",\n'
+                      '      "additional_kwargs": {},\n'
+                      '      "response_metadata": {},\n'
+                      '      "type": "human",\n'
+                      '      "name": null,\n'
+                      '      "id": null,\n'
+                      '      "example": false\n'
+                      '    },\n'
+                      '    {\n'
+                      '      "content": "Executed SQL query and returned 10 rows",\n'
+                      '      "additional_kwargs": {},\n'
+                      '      "response_metadata": {},\n'
+                      '      "type": "ai",\n'
+                      '      "name": null,\n'
+                      '      "id": null,\n'
+                      '      "example": false,\n'
+                      '      "tool_calls": [],\n'
+                      '      "invalid_tool_calls": [],\n'
+                      '      "usage_metadata": null\n'
+                      '    }\n'
+                      '  ],\n'
+                      '  "current_date": "2025-07-17",\n'
+                      '  "ticker": null,\n'
+                      '  "dates": [],\n'
+                      '  "is_range_query": false,\n'
+                      '  "last_tickers": [],\n'
+                      '  "output": {\n'
+                      '    "sql": "SELECT ticker, date, open, high, low, close\\nFROM stock_data\\nORDER BY '
+                      'date DESC\\nLIMIT 10",\n'
+                      '    "table": {\n'
+                      '      "columns": [\n'
+                      '        "ticker",\n'
+                      '        "date",\n'
+                      '        "open",\n'
+                      '        "high",\n'
+                      '        "low",\n'
+                      '        "close"\n'
+                      '      ],\n'
+                      '      "rows": [\n'
+                      '        [\n'
+                      '          "CDNS",\n'
+                      '          "2025-06-20",\n'
+                      '          299.63,\n'
+                      '          300.74,\n'
+                      '          293.84,\n'
+                      '          295.56\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "KDP",\n'
+                      '          "2025-06-20",\n'
+                      '          33.48,\n'
+                      '          33.9,\n'
+                      '          33.22,\n'
+                      '          33.57\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "GILD",\n'
+                      '          "2025-06-20",\n'
+                      '          108.85,\n'
+                      '          110.16,\n'
+                      '          107.31,\n'
+                      '          108.632\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "EQIX",\n'
+                      '          "2025-06-20",\n'
+                      '          890.36,\n'
+                      '          894.605,\n'
+                      '          882.02,\n'
+                      '          882.78\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "PDD",\n'
+                      '          "2025-06-20",\n'
+                      '          102.68,\n'
+                      '          102.92,\n'
+                      '          100.45,\n'
+                      '          101.26\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "CCEP",\n'
+                      '          "2025-06-20",\n'
+                      '          93.57,\n'
+                      '          94.6,\n'
+                      '          92.19,\n'
+                      '          92.57\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "ISRG",\n'
+                      '          "2025-06-20",\n'
+                      '          514.7,\n'
+                      '          515.01,\n'
+                      '          508.76,\n'
+                      '          509.36\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "VRTX",\n'
+                      '          "2025-06-20",\n'
+                      '          451.26,\n'
+                      '          451.81,\n'
+                      '          436.805,\n'
+                      '          440.9\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "CSCO",\n'
+                      '          "2025-06-20",\n'
+                      '          66.49,\n'
+                      '          66.65,\n'
+                      '          65.72,\n'
+                      '          66.32\n'
+                      '        ],\n'
+                      '        [\n'
+                      '          "ZS",\n'
+                      '          "2025-06-20",\n'
+                      '          305.49,\n'
+                      '          308.4,\n'
+                      '          300.26,\n'
+                      '          302.96\n'
+                      '        ]\n'
+                      '      ]\n'
+                      '    }\n'
+                      '  },\n'
+                      '  "next_node": null\n'
+                      '}',
+              'type': 'text'}],
+ 'isError': False}
+----------------------------------------
+
+[17:25:11] === ROUTER-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test new MLFlow traces',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': 'test new MLFlow traces',
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test new MLFlow traces',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': True,
+ 'sql_result': {'sql': 'SELECT ticker, date, open, high, low, close\n'
+                       'FROM stock_data\n'
+                       'ORDER BY date DESC\n'
+                       'LIMIT 10',
+                'table': {'columns': ['ticker', 'date', 'open', 'high', 'low', 'close'],
+                          'rows': [['CDNS', '2025-06-20', 299.63, 300.74, 293.84, 295.56],
+                                   ['KDP', '2025-06-20', 33.48, 33.9, 33.22, 33.57],
+                                   ['GILD', '2025-06-20', 108.85, 110.16, 107.31, 108.632],
+                                   ['EQIX', '2025-06-20', 890.36, 894.605, 882.02, 882.78],
+                                   ['PDD', '2025-06-20', 102.68, 102.92, 100.45, 101.26],
+                                   ['CCEP', '2025-06-20', 93.57, 94.6, 92.19, 92.57],
+                                   ['ISRG', '2025-06-20', 514.7, 515.01, 508.76, 509.36],
+                                   ['VRTX', '2025-06-20', 451.26, 451.81, 436.805, 440.9],
+                                   ['CSCO', '2025-06-20', 66.49, 66.65, 65.72, 66.32],
+                                   ['ZS', '2025-06-20', 305.49, 308.4, 300.26, 302.96]]}}}
+----------------------------------------
+
+[17:25:11] === ROUTER-OUT ===
+{'is_initial': False,
+ 'is_new_query': False,
+ 'last_query': 'test new MLFlow traces',
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'query': 'test new MLFlow traces',
+ 'sentiment_done': False,
+ 'sql_done': True}
+----------------------------------------
+
+[17:25:11] === DECIDE-NEXT-INPUT ===
+{'error': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'sentiment_done': False,
+ 'sql_done': True}
+----------------------------------------
+
+[17:25:11] === DECIDE-NEXT-RESULT ===
+'synth'
+----------------------------------------
+
+[17:25:11] === SYNTH-IN ===
+{'answer': None,
+ 'chat_history': [],
+ 'current_date': '2025-07-17',
+ 'error': None,
+ 'input': 'test new MLFlow traces',
+ 'is_range_query': False,
+ 'last_date': None,
+ 'last_query': 'test new MLFlow traces',
+ 'last_ticker': None,
+ 'need_news': False,
+ 'need_sentiment': False,
+ 'need_sql': True,
+ 'news_done': False,
+ 'news_result': None,
+ 'next_node': None,
+ 'output': None,
+ 'query': 'test new MLFlow traces',
+ 'sentiment_done': False,
+ 'sentiment_result': None,
+ 'sql_done': True,
+ 'sql_result': {'sql': 'SELECT ticker, date, open, high, low, close\n'
+                       'FROM stock_data\n'
+                       'ORDER BY date DESC\n'
+                       'LIMIT 10',
+                'table': {'columns': ['ticker', 'date', 'open', 'high', 'low', 'close'],
+                          'rows': [['CDNS', '2025-06-20', 299.63, 300.74, 293.84, 295.56],
+                                   ['KDP', '2025-06-20', 33.48, 33.9, 33.22, 33.57],
+                                   ['GILD', '2025-06-20', 108.85, 110.16, 107.31, 108.632],
+                                   ['EQIX', '2025-06-20', 890.36, 894.605, 882.02, 882.78],
+                                   ['PDD', '2025-06-20', 102.68, 102.92, 100.45, 101.26],
+                                   ['CCEP', '2025-06-20', 93.57, 94.6, 92.19, 92.57],
+                                   ['ISRG', '2025-06-20', 514.7, 515.01, 508.76, 509.36],
+                                   ['VRTX', '2025-06-20', 451.26, 451.81, 436.805, 440.9],
+                                   ['CSCO', '2025-06-20', 66.49, 66.65, 65.72, 66.32],
+                                   ['ZS', '2025-06-20', 305.49, 308.4, 300.26, 302.96]]}}}
+----------------------------------------
+
+[17:25:11] === FORMATTED-TABLE ===
+('\n'
+ '| ticker |    date    |  open  |   high  |   low   |  close  |\n'
+ '|--------|------------|--------|---------|---------|---------|\n'
+ '| CDNS   | 2025-06-20 | 299.63 | 300.74  | 293.84  | 295.56  |\n'
+ '| KDP    | 2025-06-20 | 33.48  | 33.9    | 33.22   | 33.57   |\n'
+ '| GILD   | 2025-06-20 | 108.85 | 110.16  | 107.31  | 108.632 |\n'
+ '| EQIX   | 2025-06-20 | 890.36 | 894.605 | 882.02  | 882.78  |\n'
+ '| PDD    | 2025-06-20 | 102.68 | 102.92  | 100.45  | 101.26  |\n'
+ '| CCEP   | 2025-06-20 | 93.57  | 94.6    | 92.19   | 92.57   |\n'
+ '| ISRG   | 2025-06-20 | 514.7  | 515.01  | 508.76  | 509.36  |\n'
+ '| VRTX   | 2025-06-20 | 451.26 | 451.81  | 436.805 | 440.9   |\n'
+ '| CSCO   | 2025-06-20 | 66.49  | 66.65   | 65.72   | 66.32   |\n'
+ '| ZS     | 2025-06-20 | 305.49 | 308.4   | 300.26  | 302.96  |')
+----------------------------------------
+
+[17:25:11] === SYNTH-CLEANED-DATA ===
+{'dates': '',
+ 'has_table': True,
+ 'news': 'No news data',
+ 'sentiment': 'No sentiment analysis available',
+ 'sql': 'SQL Query: SELECT ticker, date, open, high, low, close\n'
+        'FROM stock_data\n'
+        'ORDER BY date DESC\n'
+        'LIMIT 10\n'
+        '\n'
+        'Results:\n'
+        '| ticker |    date    |  open  |   high  |   low   |  close  |\n'
+        '|--------|------------|--------|---------|---------|---------|\n'
+        '| CDNS   | 2025-06-20 | 299.63 | 300.74  | 293.84  | 295.56  |\n'
+        '| KDP    | 2025-06-20 | 33.48  | 33.9    | 33.22   | 33.57   |\n'
+        '| GILD   | 2025-06-20 | 108.85 | 110.16  | 107.31  | 108.632 |\n'
+        '| EQIX   | 2025-06-20 | 890.36 | 894.605 | 882.02  | 882.78  |\n'
+        '| PDD    | 2025-06-20 | 102.68 | 102.92  | 100.45  | 101.26  |\n'
+        '| CCEP   | 2025-06-20 | 93.57  | 94.6    | 92.19   | 92.57   |\n'
+        '| ISRG   | 2025-06-20 | 514.7  | 515.01  | 508.76  | 509.36  |\n'
+        '| VRTX   | 2025-06-20 | 451.26 | 451.81  | 436.805 | 440.9   |\n'
+        '| CSCO   | 2025-06-20 | 66.49  | 66.65   | 65.72   | 66.32   |\n'
+        '| ZS     | 2025-06-20 | 305.49 | 308.4   | 300.26  | 302.96  |',
+ 'ticker': None}
+----------------------------------------
+
+[17:25:33] === SYNTH-SUCCESS ===
+('Here are the results for None:\n'
+ '\n'
+ '| ticker |    date    |  open  |   high  |   low   |  close  |\n'
+ '|--------|------------|--------|---------|---------|---------|\n'
+ '| CDNS   | 2025-06-20 | 299.63 | 300.74  | 293.84  | 295.56  |\n'
+ '| KDP    | 2025-06-20 | 33.48  | 33.9    | 33.22   | 33.57   |\n'
+ '| GILD   | 2025-06-20 | 108.85 | 110.16  | 107.31  | 108.632 |\n'
+ '| EQIX   | 2025-06-20 | 890.36 | 894.605 | 882.02  | 882.78  |\n'
+ '| PDD    | 2025-06-20 | 102.68 | 102.92  | 100.45  | 101.26  |\n'
+ '| CCEP   | 2025-06-20 | 93.57  | 94.6    | 92.19   | 92.57   |\n'
+ '| ISRG   | 2025-06-20 | 514.7  | 515.01  | 508.76  | 509.36  |\n'
+ '| VRTX   | 2025-06-20 | 451.26 | 451.81  | 436.805 | 440.9   |\n'
+ '| CSCO   | 2025-06-20 | 66.49  | 66.65   | 65.72   | 66.32   |\n'
+ '| ZS     | 2025-06-20 | 305.49 | 308.4   | 300.26  | 302.96  |\n'
+ '\n'
+ '## MLFlow Trace Data - June 20, 2025\n'
+ '\n'
+ "Here's a summary of the MLFlow trace data for the stocks listed, as of June 20, 2025.  The data is "
+ 'presented in a clear, formatted table.\n'
+ '\n'
+ '**Stock Performance - June 20, 2025**\n'
+ '\n'
+ '| Ticker | Date       | Open    | High    | Low     | Close   |\n'
+ '|--------|------------|---------|---------|---------|---------|\n'
+ '| CDNS   | 2025-06-20 | 299.63  | 300.74  | 293.84  | 295.56  |\n'
+ '| KDCP   | 2025-06-20 | 33.48   | 33.9    | 33.22   | 33.57   |\n'
+ '| GILD   | 2025-06-20 | 108.85  | 110.16  | 107.31  | 108.632 |\n'
+ '| EQIX   | 2025-06-20 | 890.36  | 894.605 | 882.02  | 882.78  |\n'
+ '| PDD    | 2025-06-20 | 102.68  | 102.92  | 100.45  | 101.26  |\n'
+ '| CCEP   | 2025-06-20 | 93.57   | 94.6    | 92.19   | 92.57   |\n'
+ '| ISRG   | 2025-06-20 | 514.7   | 515.01  | 508.76  | 509.36  |\n'
+ '| VRTX   | 2025-06-20 | 451.26  | 451.81  | 436.805 | 440.9   |\n'
+ '| CSCO   | 2025-06-20 | 66.49   | 66.65   | 65.72   | 66.32   |\n'
+ '| ZS     | 2025-06-20 | 305.49  | 308.4   | 300.26  | 302.96  |\n'
+ '\n'
+ '**Note:** The data is limited to the first 10 stocks as requested.\n'
+ '\n'
+ '**News Data:**\n'
+ '\n'
+ '*   No news data was provided in the input.\n'
+ '\n'
+ '**Sentiment Analysis:**\n'
+ '\n'
+ '*   No sentiment analysis data is available for the provided stocks.\n'
+ '\n'
+ '**Additional Notes:**\n'
+ '\n'
+ '*   The data provided is a snapshot in time (June 20, 2025).\n'
+ '*   No specific news or sentiment analysis was available for the stocks.\n'
+ '\n'
+ 'If you have additional data or news information, please provide it, and I can refine the analysis further.')
+----------------------------------------
+
+[17:25:33] === SYNTH-OUT ===
+('Here are the results for None:\n'
+ '\n'
+ '| ticker |    date    |  open  |   high  |   low   |  close  |\n'
+ '|--------|------------|--------|---------|---------|---------|\n'
+ '| CDNS   | 2025-06-20 | 299.63 | 300.74  | 293.84  | 295.56  |\n'
+ '| KDP    | 2025-06-20 | 33.48  | 33.9    | 33.22   | 33.57   |\n'
+ '| GILD   | 2025-06-20 | 108.85 | 110.16  | 107.31  | 108.632 |\n'
+ '| EQIX   | 2025-06-20 | 890.36 | 894.605 | 882.02  | 882.78  |\n'
+ '| PDD    | 2025-06-20 | 102.68 | 102.92  | 100.45  | 101.26  |\n'
+ '| CCEP   | 2025-06-20 | 93.57  | 94.6    | 92.19   | 92.57   |\n'
+ '| ISRG   | 2025-06-20 | 514.7  | 515.01  | 508.76  | 509.36  |\n'
+ '| VRTX   | 2025-06-20 | 451.26 | 451.81  | 436.805 | 440.9   |\n'
+ '| CSCO   | 2025-06-20 | 66.49  | 66.65   | 65.72   | 66.32   |\n'
+ '| ZS     | 2025-06-20 | 305.49 | 308.4   | 300.26  | 302.96  |\n'
+ '\n'
+ '## MLFlow Trace Data - June 20, 2025\n'
+ '\n'
+ "Here's a summary of the MLFlow trace data for the stocks listed, as of June 20, 2025.  The data is "
+ 'presented in a clear, formatted table.\n'
+ '\n'
+ '**Stock Performance - June 20, 2025**\n'
+ '\n'
+ '| Ticker | Date       | Open    | High    | Low     | Close   |\n'
+ '|--------|------------|---------|---------|---------|---------|\n'
+ '| CDNS   | 2025-06-20 | 299.63  | 300.74  | 293.84  | 295.56  |\n'
+ '| KDCP   | 2025-06-20 | 33.48   | 33.9    | 33.22   | 33.57   |\n'
+ '| GILD   | 2025-06-20 | 108.85  | 110.16  | 107.31  | 108.632 |\n'
+ '| EQIX   | 2025-06-20 | 890.36  | 894.605 | 882.02  | 882.78  |\n'
+ '| PDD    | 2025-06-20 | 102.68  | 102.92  | 100.45  | 101.26  |\n'
+ '| CCEP   | 2025-06-20 | 93.57   | 94.6    | 92.19   | 92.57   |\n'
+ '| ISRG   | 2025-06-20 | 514.7   | 515.01  | 508.76  | 509.36  |\n'
+ '| VRTX   | 2025-06-20 | 451.26  | 451.81  | 436.805 | 440.9   |\n'
+ '| CSCO   | 2025-06-20 | 66.49   | 66.65   | 65.72   | 66.32   |\n'
+ '| ZS     | 2025-06-20 | 305.49  | 308.4   | 300.26  | 302.96  |\n'
+ '\n'
+ '**Note:** The data is limited to the first 10 stocks as requested.\n'
+ '\n'
+ '**News Data:**\n'
+ '\n'
+ '*   No news data was provided in the input.\n'
+ '\n'
+ '**Sentiment Analysis:**\n'
+ '\n'
+ '*   No sentiment analysis data is available for the provided stocks.\n'
+ '\n'
+ '**Additional Notes:**\n'
+ '\n'
+ '*   The data provided is a snapshot in time (June 20, 2025).\n'
+ '*   No specific news or sentiment analysis was available for the stocks.\n'
+ '\n'
+ 'If you have additional data or news information, please provide it, and I can refine the analysis further.')
+----------------------------------------
+🧪 MLflow trace flushed and run ended
+2025/07/17 17:25:33 WARNING mlflow.tracing.export.async_export_queue: Failed to log trace to MLflow backend. Error: [Errno 30] Read-only file system: '/mlflow'.
+✅ FastAPI server started with LangGraph persistence
+Node tracing error for router: INVALID_PARAMETER_VALUE: Changing param values is not allowed. Param with key='node_router_summary' was already logged with value='{'node_name': 'router', 'step_number': 1, 'execution_time': 0.07488584518432617, 'timestamp': '2025-07-17T17:24:56.823738', 'input_summary': {'type': 'dict', 'keys': ['args', 'kwargs'], 'size': 2}, 'o...' for run ID='8649c8127ce446e49eeb1ae17472d5f4'. Attempted logging new value '{'node_name': 'router', 'step_number': 3, 'execution_time': 0.0003948211669921875, 'timestamp': '2025-07-17T17:25:11.814992', 'input_summary': {'type': 'dict', 'keys': ['args', 'kwargs'], 'size': 2}, ...'.
+
+The cause of this error is typically due to repeated calls
+to an individual run_id event logging.
+
+Incorrect Example:
+---------------------------------------
+with mlflow.start_run():
+    mlflow.log_param("depth", 3)
+    mlflow.log_param("depth", 5)
+---------------------------------------
+
+Which will throw an MlflowException for overwriting a
+logged parameter.
+
+Correct Example:
+---------------------------------------
+with mlflow.start_run():
+    with mlflow.start_run(nested=True):
+        mlflow.log_param("depth", 3)
+    with mlflow.start_run(nested=True):
+        mlflow.log_param("depth", 5)
+---------------------------------------
+
+Which will create a new nested run for each individual
+model and prevent parameter key collisions within the
+tracking store.
+MLFlow operations flushed successfully
+🏃 View run rare-newt-382 at: http://localhost:5001/#/experiments/1/runs/41e8f06b77214681ad954268ab7ec2ff
+🧪 View experiment at: http://localhost:5001/#/experiments/1
+INFO:     127.0.0.1:54220 - "POST /chat HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [72432]
+INFO:     Stopping reloader process [70242]

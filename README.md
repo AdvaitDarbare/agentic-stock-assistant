@@ -1,225 +1,379 @@
-# 📈 Multi-Agent Stock & News Assistant (LangGraph)
+# FinanceScope - AI Stock & Market Analysis
 
-This is a **LangGraph-powered, MCP-style multi-agent system** for answering stock-related queries, retrieving recent headlines, and handling general chat.
+Intelligent financial analysis with real-time stock data, news insights, and sentiment analysis powered by multi-agent LangGraph workflows.
 
-It supports **Postgres with pgvector** for semantic news search, and can be containerized with **Docker** for easy deployment.
+![System Architecture](backend/images/system_architecture.png)
 
----
+## 🚀 Quick Start
 
-## ⭐️ Features
+### Prerequisites
+- Docker and Docker Compose
+- Node.js 18+ and npm
+- Python 3.11+
+- PostgreSQL (for local development)
 
-- 🔀 **Routing** of user questions to specialized agents
-- 📈 **Stock price** retrieval from Postgres
-- 📰 **News headline** retrieval from pgvector store
-- 💬 **Fallback agent** for general conversation
-- 🧠 **Memory** with chat history
+### 🏃‍♂️ Quick Start (4-Terminal Setup)
 
----
-
-## 🗺️ Architecture Overview
-
-![LangGraph Workflow](images/langgraph-workflow.png)
-
-> *Graph generated using LangGraph visualizer*
-
----
-
-## 🧩 Agent Roles
-
-### 🧭 Router
-- Classifies user question into SQL, News, or Fallback.
-- Uses regex heuristics + LLM classification.
-- Sets flags in shared state (`need_sql`, `need_news`).
-
----
-
-### 📈 agent_sql
-- Connects to **Postgres** database.
-- Runs SQL queries on `stock_prices` table.
-- Fetches data such as open, close, high, low, volume.
-- Returns structured JSON.
-
----
-
-### 📰 agent_news
-- Connects to **Postgres** with pgvector extension.
-- Performs semantic search over `news_articles` table.
-- Returns top headlines relevant to the ticker.
-- Supports FAISS/vector store alternatives locally.
-
----
-
-### 🗨️ agent_fallback
-- Handles chit-chat or unsupported questions.
-- Uses LLM to generate friendly fallback responses.
-
----
-
-### ✨ synth
-- Compiles final answer for the user.
-- Formats stock data in clear natural-language sentences.
-- Includes news headlines *only if* the question asks for them.
-- Maintains chat history in state.
-
----
-
-## 🗄️ Data Storage / pgvector
-
-✅ Stock Prices Table Example:
-
-| Column  | Type    |
-| ------- | ------- |
-| symbol  | TEXT    |
-| date    | DATE    |
-| open    | NUMERIC |
-| close   | NUMERIC |
-| high    | NUMERIC |
-| low     | NUMERIC |
-| volume  | BIGINT  |
-
-✅ News Articles Table with pgvector:
-
-| Column     | Type         |
-| ---------- | ------------ |
-| ticker     | TEXT         |
-| published  | DATE         |
-| headline   | TEXT         |
-| url        | TEXT         |
-| embedding  | VECTOR(768)  |
-
-✅ pgvector extension:
-
-- Enables semantic search over text.
-- Stores LLM-generated embeddings.
-- Used by `agent_news` to find top relevant headlines for a stock ticker.
-
----
-
-## 🐳 Docker Usage
-
-Run Postgres with pgvector using **Docker**:
-
-**Example docker-compose.yml snippet:**
-
-```yaml
-version: '3'
-services:
-  postgres:
-    image: pgvector/pgvector:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: yourpassword
-      POSTGRES_DB: stocks
-    ports:
-      - "5432:5432"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-volumes:
-  pgdata:
-```
-
-✅ pgvector is pre-installed in the image.  
-✅ You can load your schema with SQL scripts.  
-
----
-
-## ⚙️ Environment Setup
-
-Create a `.env` file:
-
-```
-DB_NAME=stocks
-DB_USER=postgres
-DB_PASS=yourpassword
-DB_HOST=localhost
-DB_PORT=5432
-
-LLM_MODEL=ollama
-```
-
----
-
-## 🧮 Example User Queries
-
-✅ "What was the close price of AAPL on 06/12/2025?"  
-→ routed to **agent_sql**
-
-✅ "Give me latest news for Microsoft."  
-→ routed to **agent_news**
-
-✅ "Hi there!"  
-→ routed to **agent_fallback**
-
-✅ "What is the open and close price of AMZN on 06/11/2025 and related news?"  
-→ routed to **both** agent_sql and agent_news
-
----
-
-## 🧑‍💻 Running the CLI
-
-Interactive chat:
+#### Terminal 1: Database
 ```bash
-python main.py
+# Start PostgreSQL database
+docker compose up db -d
 ```
 
-Example:
-```
-You: What was the open price of MSFT on 06/12/2025?
-AI: On June 12, 2025, Microsoft (MSFT) stock opened at 478.87 and closed at 475.02.
-```
-
-One-off question:
+#### Terminal 2: MCP Servers
 ```bash
-python main.py "Give me the close price of AAPL on 06/12/2025"
+cd backend
+python3 start_all_servers.py
+```
+This starts multiple MCP (Model-Controller-Presenter) agents:
+- SQL Agent (port 8010)
+- News Agent (port 8020)
+- Fallback Agent (port 8030)
+- Sentiment Agent (port 8040)
+
+#### Terminal 3: Backend API
+```bash
+cd backend
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
----
-
-## 📦 Example Folder Structure
-
-```
-/agents
-    sql_agent.py
-    news_agent.py
-    fallback_agent.py
-/images
-    langgraph-workflow.png
-main.py
-.env
-requirements.txt
-README.md
+#### Terminal 4: Frontend
+```bash
+cd frontend
+npm install
+npm run dev
 ```
 
----
+🌐 Access the application at: http://localhost:3000
 
-## ❤️ About MCP
+## 🏗️ System Architecture
 
-This project **follows the MCP design pattern**:
+### Core Components
 
-✅ Shared state / context  
-✅ Planner/router to decide next steps  
-✅ Specialist agents for discrete tasks  
-✅ Synth node for final answer  
+#### 1. Database Layer
+- **PostgreSQL**: Primary data store for stock data, news, and analysis
+- **Schema**: Optimized for financial time-series data and relationships
 
-Your agents are currently **local functions**.  
+#### 2. MCP (Model-Controller-Presenter) Servers
 
-✅ Optionally, you can convert them to **MCP servers** in the future:
-- Expose them over HTTP.
-- Call them via `langchain-mcp-adapters`.
-- Enable fully decoupled microservices architecture.
+| Agent | Port | Description |
+|-------|------|-------------|
+| SQL Agent | 8010 | Handles complex financial queries and data analysis |
+| News Agent | 8020 | Processes and analyzes financial news |
+| Fallback Agent | 8030 | Handles general queries and fallback scenarios |
+| Sentiment Agent | 8040 | Performs sentiment analysis on news and social data |
 
----
+#### 3. Backend (FastAPI)
+- RESTful API endpoints
+- Authentication & Authorization
+- Request validation and routing
+- Integration with MCP agents
 
-## 🧭 Next Steps / Ideas
+#### 4. Frontend (Next.js)
+- Modern React-based UI
+- Real-time data visualization
+- Interactive dashboards
+- Responsive design
 
-⭐ Convert agents to **MCP servers** for remote access  
-⭐ Use **langchain-mcp-adapters** for standardized tool calls  
-⭐ Add more agents (e.g. earnings calendar, analyst ratings)  
-⭐ Deploy with LangGraph server for persistent sessions  
-⭐ Improve planner with advanced intent classification
+## 🔍 Example Queries
 
----
+Here are some example queries you can try with the system:
 
-## 📜 License
+### Stock Price Queries
+- `Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11` 
+  *(Runs SQL node)*
+- `Can you tell me the open price of AAPL on 2025-06-06` 
+  *(Runs SQL node)*
+- `Can you tell me the open price, close price of AAPL from 2025-06-06 to 2025-06-11` 
+  *(Runs SQL node)*
+- `Can you tell me the close price of MSFT and AAPL from 2025-06-06 to 2025-06-11` 
+  *(Runs SQL node for multiple tickers)*
 
-MIT License. Feel free to adapt and extend!
+### News Queries
+- `Latest news of MSFT` 
+  *(Runs News node)*
+- `Latest news of AAPL` 
+  *(Runs News node)*
+
+### Combined Queries
+- `Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11 and can you give me the latest news of AAPL` 
+  *(Runs SQL node then News node)*
+- `Can you tell me the close price of MSFT from 2025-06-01 to 2025-06-06 and can you give me the latest news of MSFT` 
+  *(Runs SQL node then News node)*
+
+### Sentiment Analysis
+- `Can you tell me the sentiment of the latest news about Apple stock from 06/01/2025 to 06/11/2025` 
+  *(Runs News node then Sentiment node)*
+
+## 🛠️ Development
+
+### Environment Setup
+1. Clone the repository
+2. Set up Python virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   pip install -r backend/requirements.txt
+   ```
+3. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+### Running Tests
+```bash
+# Backend tests
+cd backend
+pytest
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+#### Port Conflicts
+If you see "address already in use" errors:
+```bash
+# Find and kill processes
+lsof -ti :8020 | xargs kill -9
+lsof -ti :8030 | xargs kill -9
+```
+
+#### Database Connection Issues
+Ensure PostgreSQL is running:
+```bash
+docker ps  # Check if db container is running
+```
+
+## 📚 Documentation
+
+- [API Documentation](http://localhost:8000/docs) (when backend is running)
+- [MCP Agent API](http://localhost:8010/mcp) (SQL Agent example)
+- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
+
+## 📄 License
+
+MIT
+
+# 3. Start backend locally (new terminal)
+cd backend
+uvicorn main:app --reload
+
+# 4. Start frontend (new terminal)
+cd frontend
+npm run dev
+```
+
+### Alternative: Full Docker Setup
+```bash
+# 1. Start all Docker services
+cd backend
+docker compose up -d
+
+# 2. Start MCP servers (new terminal)
+cd backend
+python3 start_all_servers.py
+
+# 3. Start frontend (new terminal)
+cd frontend
+npm run dev
+```
+
+## 🌐 Access URLs
+
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+- **Database**: localhost:5432 (internal)
+
+## 📊 Experiment Tracking
+
+FinanceScope uses **Databricks MLflow** for experiment tracking and model management. This allows for:
+- Tracking model performance and metrics
+- Versioning of different model configurations
+- Comparing experiment results
+- Managing the machine learning lifecycle
+
+All experiment data is stored in the Databricks workspace, accessible through the Databricks UI.
+
+## 🐘 Database Access
+
+### PostgreSQL Shell Access
+```bash
+# Interactive PostgreSQL shell
+docker exec -it backend-db-1 psql -U postgres -d agentic_stock
+```
+
+### Database Connection Details
+- **Host**: localhost
+- **Port**: 5432
+- **Database**: agentic_stock
+- **Username**: postgres
+- **Password**: secret
+
+### Common PostgreSQL Commands
+```sql
+-- See all tables
+\dt
+
+-- Look at stock_data table structure
+\d stock_data
+
+-- See sample data
+SELECT * FROM stock_data LIMIT 5;
+
+-- Count total rows
+SELECT COUNT(*) FROM stock_data;
+
+-- Exit PostgreSQL shell
+\q
+```
+
+### One-time Database Queries (without entering shell)
+```bash
+# Check database version
+docker exec backend-db-1 psql -U postgres -d agentic_stock -c "SELECT version();"
+
+# List all tables
+docker exec backend-db-1 psql -U postgres -d agentic_stock -c "\dt"
+
+# Count rows in stock_data table
+docker exec backend-db-1 psql -U postgres -d agentic_stock -c "SELECT COUNT(*) FROM stock_data;"
+```
+
+## 🛠️ Development Commands
+
+### Check Container Status
+```bash
+docker ps
+```
+
+### View Service Logs
+```bash
+# Backend logs (if using Docker)
+docker logs backend-api-1 -f
+
+
+# Database logs
+docker logs backend-db-1 -f
+```
+
+### Restart Services
+```bash
+# Restart Docker services
+docker compose down
+docker compose up -d
+
+# Restart MCP servers
+# Ctrl+C to stop, then run again:
+python3 start_all_servers.py
+```
+
+## 🔧 MCP Server URLs
+
+When MCP servers are running:
+- **SQL Agent**: http://localhost:8010/mcp
+- **News Agent**: http://localhost:8020/mcp
+- **Fallback Agent**: http://localhost:8030/mcp
+- **Sentiment Agent**: http://localhost:8040/mcp
+
+## 📊 Features
+
+- **Stock Price Analysis**: Real-time stock data queries and analysis
+- **News Integration**: Latest financial news and headlines
+- **Sentiment Analysis**: Correlation between news sentiment and stock prices
+- **Multi-Agent System**: Specialized agents for different data sources
+- **Persistent Conversations**: Chat history maintained across sessions
+- **Interactive UI**: Modern chat interface with conversation management
+- **Databricks MLflow**: Experiment tracking and model performance monitoring
+
+## 🛑 Stopping the Application
+
+```bash
+# Stop MCP servers
+# Ctrl+C in the terminal running start_all_servers.py
+
+# Stop frontend
+# Ctrl+C in the terminal running npm run dev
+
+# Stop backend (if running locally)
+# Ctrl+C in the terminal running uvicorn
+
+# Stop Docker services
+cd backend
+docker compose down
+```
+
+## 🐛 Troubleshooting
+
+### Port Already in Use
+```bash
+# Check what's using ports
+lsof -i :5432  # Database
+lsof -i :8000  # Backend
+
+# Kill existing containers
+docker stop backend-db-1 backend-api-1
+docker rm backend-db-1 backend-api-1
+```
+
+### Database Connection Issues
+```bash
+# Check if database is running
+docker ps | grep db
+
+# Test database connection
+docker exec backend-db-1 psql -U postgres -d agentic_stock -c "SELECT current_database();"
+```
+
+### MCP Servers Not Starting
+```bash
+# Check for Python import errors
+python3 -c "from graph import run_query_with_persistence; print('Import successful')"
+{{ ... }}
+# Check if ports are available
+netstat -an | grep -E "(8010|8020|8030|8040)"
+```
+
+## 📁 Project Structure
+
+```
+.
+├── backend/
+│   ├── agents/              # MCP server agents
+│   ├── tools/               # Database and utility tools
+│   ├── tests/               # Test files and ticker mapping
+│   ├── docker-compose.yml   # Docker services configuration
+│   ├── main.py             # FastAPI application
+│   └── graph.py            # LangGraph workflow
+├── frontend/
+│   ├── src/
+│   │   ├── app/            # Next.js app router
+│   │   └── components/     # React components
+│   └── package.json
+└── README.md
+```
+
+## 🔄 Development Workflow
+
+1. **Start Database**: `docker compose up db -d`
+2. **Start MCP Servers**: `python3 start_all_servers.py`
+3. **Start Backend**: `uvicorn main:app --reload` (for development)
+4. **Start Frontend**: `npm run dev`
+5. **Access Application**: http://localhost:3000
+6. **Monitor Experiments**: Access Databricks MLflow UI
+
+## 🎯 Example Queries
+
+Try these queries in the application:
+- "What's the latest news on MSFT?"
+- "Show me AAPL stock prices from 2025-06-06 to 2025-06-11"
+- "Analyze sentiment for TSLA news"
+- "What's the correlation between NVDA news and stock price?"
+
+Happy coding! 🎉
