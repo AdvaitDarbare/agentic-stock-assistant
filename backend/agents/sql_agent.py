@@ -80,8 +80,8 @@ def _extract_dates_from_query(query: str) -> List[str]:
         year, month, day = match.groups()
         dates.append(f"{year}-{int(month):02d}-{int(day):02d}")
     
-    # Sort dates to ensure proper order for range queries
-    dates.sort()
+    # Remove duplicates and sort dates to ensure proper order for range queries
+    dates = sorted(list(set(dates)))
     return dates
 
 def _is_date_range_query(query: str) -> bool:
@@ -90,7 +90,13 @@ def _is_date_range_query(query: str) -> bool:
         "from", "to", "between", "range", "period", 
         "through", "until", "since", "over"
     ]
-    return any(indicator in query_lower for indicator in range_indicators)
+    # Check for explicit range indicators
+    has_range_words = any(indicator in query_lower for indicator in range_indicators)
+    
+    # Also check for single date queries with "on" keyword
+    has_single_date_indicator = " on " in query_lower
+    
+    return has_range_words and not has_single_date_indicator
 
 def _extract_tickers_from_query(query: str) -> List[str]:
     """
@@ -150,14 +156,21 @@ Respond with a JSON object containing:
 
 Stock data table has columns: ticker, date, open, high, low, close
 
+IMPORTANT RULES:
+1. If query mentions specific columns (e.g., "open price", "close price"), ONLY include those columns plus date and ticker
+2. If query says "on YYYY-MM-DD", set date_filter to "single"
+3. If query says "from X to Y", set date_filter to "range"
+4. If no dates mentioned, set date_filter to "recent"
+
 Examples:
-- "AAPL open price" -> {{"columns": ["date", "open"], "date_filter": "recent", "ticker_required": true, "intent": "recent open price"}}
-- "Tesla close from 2025-06-06 to 2025-06-11" -> {{"columns": ["date", "close"], "date_filter": "range", "ticker_required": true, "intent": "close prices in date range"}}
-- "MSFT high and low yesterday" -> {{"columns": ["date", "high", "low"], "date_filter": "single", "ticker_required": true, "intent": "high/low for specific date"}}
-- "correlation between news and Apple stock price" -> {{"columns": ["date", "open", "high", "low", "close"], "date_filter": "range", "ticker_required": true, "intent": "comprehensive price data for correlation analysis"}}
-- "Apple stock price" -> {{"columns": ["date", "open", "high", "low", "close"], "date_filter": "recent", "ticker_required": true, "intent": "full price data"}}
+- "AAPL open price on 2025-06-06" -> {{"columns": ["ticker", "date", "open"], "date_filter": "single", "ticker_required": true, "intent": "open price for specific date"}}
+- "Tesla close from 2025-06-06 to 2025-06-11" -> {{"columns": ["ticker", "date", "close"], "date_filter": "range", "ticker_required": true, "intent": "close prices in date range"}}
+- "AAPL open price, close price from 2025-06-06 to 2025-06-11" -> {{"columns": ["ticker", "date", "open", "close"], "date_filter": "range", "ticker_required": true, "intent": "open and close prices in date range"}}
+- "MSFT high and low yesterday" -> {{"columns": ["ticker", "date", "high", "low"], "date_filter": "single", "ticker_required": true, "intent": "high/low for specific date"}}
+- "Apple stock price" -> {{"columns": ["ticker", "date", "open", "high", "low", "close"], "date_filter": "recent", "ticker_required": true, "intent": "full price data"}}
 
 For correlation queries, return ALL price columns (open, high, low, close) for comprehensive analysis.
+Always include "ticker" and "date" in columns list.
 
 Respond only with the JSON object:
 """
@@ -173,7 +186,7 @@ Respond only with the JSON object:
     except Exception as e:
         _dbg("QUERY-ANALYSIS-ERROR", f"Analysis failed: {e}")
     return {
-        "columns": ["date", "open", "close"],
+        "columns": ["ticker", "date", "open", "close"],
         "date_filter": "recent",
         "ticker_required": True,
         "intent": "general stock data"
@@ -206,12 +219,13 @@ QUERY ANALYSIS:
 
 STRICT REQUIREMENTS:
 1. ONLY query the stock_data table.
-2. ALWAYS include 'ticker' and 'date' in SELECT.
+2. Select ONLY the columns specified in the intent analysis: {intent.get('columns', ['ticker', 'date'])}
 3. If multiple tickers, use `WHERE ticker IN ('T1','T2',…)`; otherwise `WHERE ticker = 'T1'`.
-4. For ranges: `WHERE date BETWEEN 'start_date' AND 'end_date'`.
-5. For recent: `ORDER BY date DESC LIMIT 10`.
-6. Use proper 'YYYY-MM-DD'.
-7. Select only requested columns.
+4. For single date: `WHERE date = 'YYYY-MM-DD'`.
+5. For date ranges: `WHERE date BETWEEN 'start_date' AND 'end_date'`.
+6. For recent data without dates: `ORDER BY date DESC LIMIT 10`.
+7. Use proper 'YYYY-MM-DD' format.
+8. Do NOT add extra columns beyond what's requested.
 
 Generate the SQL wrapped in ```sql ```:
 """
@@ -226,37 +240,53 @@ Generate the SQL wrapped in ```sql ```:
     sql = _clean_sql(response)
     sql = _force_fix_table_name(sql).strip().rstrip(";")
 
-    # 2) Strip out any existing WHERE… clause entirely
+    # 2) Strip out any existing WHERE clause and ORDER BY
     sql = re.sub(r"(?is)\bWHERE\b.*$", "", sql).strip()
+    sql = re.sub(r"(?is)\bORDER\s+BY\b.*$", "", sql).strip()
+    sql = re.sub(r"(?is)\bLIMIT\b.*$", "", sql).strip()
 
     # 3) Build a canonical WHERE clause
+    where_conditions = []
+    
     if tickers:
         if len(tickers) == 1:
-            ticker_filter = f"ticker = '{tickers[0]}'"
+            where_conditions.append(f"ticker = '{tickers[0]}'")
         else:
             vals = ", ".join(f"'{t}'" for t in tickers)
-            ticker_filter = f"ticker IN ({vals})"
+            where_conditions.append(f"ticker IN ({vals})")
 
-        if is_range and len(dates) >= 2:
-            date_filter = f"date BETWEEN '{dates[0]}' AND '{dates[1]}'"
-            where_clause = f"WHERE {ticker_filter} AND {date_filter}"
-        else:
-            where_clause = f"WHERE {ticker_filter}"
+    # Handle date filtering based on intent and extracted dates
+    date_filter_type = intent.get('date_filter', 'recent')
+    
+    if date_filter_type == 'single' and dates:
+        # Single date query - use exact date match
+        where_conditions.append(f"date = '{dates[0]}'")
+    elif date_filter_type == 'range' and len(dates) >= 2:
+        # Range query - use BETWEEN
+        where_conditions.append(f"date BETWEEN '{dates[0]}' AND '{dates[1]}'")
+    elif date_filter_type == 'recent' and not dates:
+        # Recent data - add ORDER BY and LIMIT later
+        pass
 
-        sql = f"{sql}\n{where_clause}"
+    if where_conditions:
+        sql = f"{sql}\nWHERE {' AND '.join(where_conditions)}"
 
-    # 4) Ensure ticker & date columns are selected
+    # Add ORDER BY and LIMIT for recent queries without specific dates
+    if date_filter_type == 'recent' and not dates:
+        sql = f"{sql}\nORDER BY date DESC LIMIT 10"
+
+    # 4) Ensure correct columns are selected based on intent
+    requested_columns = intent.get('columns', ['ticker', 'date'])
     m = re.search(r"select\s+(.*?)\s+from", sql, flags=re.IGNORECASE)
     if m:
-        cols = [c.strip().lower() for c in m.group(1).split(",")]
-        missing = [c for c in ("ticker", "date") if c not in cols]
-        if missing:
-            sql = re.sub(
-                r"(?i)select\s+",
-                f"SELECT {', '.join(missing)}, ",
-                sql,
-                count=1
-            )
+        # Replace the SELECT clause with the requested columns
+        columns_str = ", ".join(requested_columns)
+        sql = re.sub(
+            r"(?i)select\s+.*?\s+from",
+            f"SELECT {columns_str} FROM",
+            sql,
+            count=1
+        )
 
     _dbg("SQL-GENERATION-CLEANED", sql)
     return sql

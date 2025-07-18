@@ -2,22 +2,163 @@
 
 Intelligent financial analysis with real-time stock data, news insights, and sentiment analysis powered by multi-agent LangGraph workflows.
 
+![System Architecture](backend/images/system_architecture.png)
+
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Docker and Docker Compose
-- Node.js and npm
+- Node.js 18+ and npm
 - Python 3.11+
+- PostgreSQL (for local development)
 
-### Complete Startup (Recommended for Development)
+### 🏃‍♂️ Quick Start (4-Terminal Setup)
+
+#### Terminal 1: Database
 ```bash
-# 1. Start Docker services (database + MLFlow)
-cd backend
-docker compose up db mlflow -d
+# Start PostgreSQL database
+docker compose up db -d
+```
 
-# 2. Start MCP servers (new terminal)
+#### Terminal 2: MCP Servers
+```bash
 cd backend
 python3 start_all_servers.py
+```
+This starts multiple MCP (Model-Controller-Presenter) agents:
+- SQL Agent (port 8010)
+- News Agent (port 8020)
+- Fallback Agent (port 8030)
+- Sentiment Agent (port 8040)
+
+#### Terminal 3: Backend API
+```bash
+cd backend
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
+```
+
+#### Terminal 4: Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+🌐 Access the application at: http://localhost:3000
+
+## 🏗️ System Architecture
+
+### Core Components
+
+#### 1. Database Layer
+- **PostgreSQL**: Primary data store for stock data, news, and analysis
+- **Schema**: Optimized for financial time-series data and relationships
+
+#### 2. MCP (Model-Controller-Presenter) Servers
+
+| Agent | Port | Description |
+|-------|------|-------------|
+| SQL Agent | 8010 | Handles complex financial queries and data analysis |
+| News Agent | 8020 | Processes and analyzes financial news |
+| Fallback Agent | 8030 | Handles general queries and fallback scenarios |
+| Sentiment Agent | 8040 | Performs sentiment analysis on news and social data |
+
+#### 3. Backend (FastAPI)
+- RESTful API endpoints
+- Authentication & Authorization
+- Request validation and routing
+- Integration with MCP agents
+
+#### 4. Frontend (Next.js)
+- Modern React-based UI
+- Real-time data visualization
+- Interactive dashboards
+- Responsive design
+
+## 🔍 Example Queries
+
+Here are some example queries you can try with the system:
+
+### Stock Price Queries
+- `Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11` 
+  *(Runs SQL node)*
+- `Can you tell me the open price of AAPL on 2025-06-06` 
+  *(Runs SQL node)*
+- `Can you tell me the open price, close price of AAPL from 2025-06-06 to 2025-06-11` 
+  *(Runs SQL node)*
+- `Can you tell me the close price of MSFT and AAPL from 2025-06-06 to 2025-06-11` 
+  *(Runs SQL node for multiple tickers)*
+
+### News Queries
+- `Latest news of MSFT` 
+  *(Runs News node)*
+- `Latest news of AAPL` 
+  *(Runs News node)*
+
+### Combined Queries
+- `Can you tell me the open price of AAPL from 2025-06-06 to 2025-06-11 and can you give me the latest news of AAPL` 
+  *(Runs SQL node then News node)*
+- `Can you tell me the close price of MSFT from 2025-06-01 to 2025-06-06 and can you give me the latest news of MSFT` 
+  *(Runs SQL node then News node)*
+
+### Sentiment Analysis
+- `Can you tell me the sentiment of the latest news about Apple stock from 06/01/2025 to 06/11/2025` 
+  *(Runs News node then Sentiment node)*
+
+## 🛠️ Development
+
+### Environment Setup
+1. Clone the repository
+2. Set up Python virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: .\venv\Scripts\activate
+   pip install -r backend/requirements.txt
+   ```
+3. Install frontend dependencies:
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+### Running Tests
+```bash
+# Backend tests
+cd backend
+pytest
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+## 🔍 Troubleshooting
+
+### Common Issues
+
+#### Port Conflicts
+If you see "address already in use" errors:
+```bash
+# Find and kill processes
+lsof -ti :8020 | xargs kill -9
+lsof -ti :8030 | xargs kill -9
+```
+
+#### Database Connection Issues
+Ensure PostgreSQL is running:
+```bash
+docker ps  # Check if db container is running
+```
+
+## 📚 Documentation
+
+- [API Documentation](http://localhost:8000/docs) (when backend is running)
+- [MCP Agent API](http://localhost:8010/mcp) (SQL Agent example)
+- [LangGraph Documentation](https://langchain-ai.github.io/langgraph/)
+
+## 📄 License
+
+MIT
 
 # 3. Start backend locally (new terminal)
 cd backend
@@ -48,31 +189,17 @@ npm run dev
 - **Frontend**: http://localhost:3000
 - **Backend API**: http://localhost:8000
 - **API Documentation**: http://localhost:8000/docs
-- **MLFlow UI**: http://localhost:5001
 - **Database**: localhost:5432 (internal)
 
-## 📊 MLFlow Integration
+## 📊 Experiment Tracking
 
-### What is MLFlow?
-MLFlow is an open-source platform for managing machine learning experiments, tracking metrics, and versioning models. In FinanceScope, it tracks:
+FinanceScope uses **Databricks MLflow** for experiment tracking and model management. This allows for:
+- Tracking model performance and metrics
+- Versioning of different model configurations
+- Comparing experiment results
+- Managing the machine learning lifecycle
 
-- **Agent Performance**: Response times, success rates
-- **Model Metrics**: LLM token usage, accuracy metrics
-- **Experiment Tracking**: A/B testing of different prompts
-- **Parameter Logging**: Model parameters, configurations
-
-### MLFlow Features in FinanceScope:
-- **Experiment Tracking**: All agent interactions are logged
-- **Model Versioning**: Track different model configurations
-- **Metrics Dashboard**: Visualize performance over time
-- **Parameter Comparison**: Compare different agent settings
-
-### Test MLFlow:
-```bash
-# Test the MLFlow connection
-cd backend
-python3 tests/test_mlflow.py
-```
+All experiment data is stored in the Databricks workspace, accessible through the Databricks UI.
 
 ## 🐘 Database Access
 
@@ -131,8 +258,6 @@ docker ps
 # Backend logs (if using Docker)
 docker logs backend-api-1 -f
 
-# MLFlow logs
-docker logs backend-mlflow-1 -f
 
 # Database logs
 docker logs backend-db-1 -f
@@ -165,7 +290,7 @@ When MCP servers are running:
 - **Multi-Agent System**: Specialized agents for different data sources
 - **Persistent Conversations**: Chat history maintained across sessions
 - **Interactive UI**: Modern chat interface with conversation management
-- **MLFlow Tracking**: Experiment tracking and model performance monitoring
+- **Databricks MLflow**: Experiment tracking and model performance monitoring
 
 ## 🛑 Stopping the Application
 
@@ -190,12 +315,11 @@ docker compose down
 ```bash
 # Check what's using ports
 lsof -i :5432  # Database
-lsof -i :5001  # MLFlow
 lsof -i :8000  # Backend
 
 # Kill existing containers
-docker stop backend-db-1 backend-api-1 backend-mlflow-1
-docker rm backend-db-1 backend-api-1 backend-mlflow-1
+docker stop backend-db-1 backend-api-1
+docker rm backend-db-1 backend-api-1
 ```
 
 ### Database Connection Issues
@@ -207,23 +331,11 @@ docker ps | grep db
 docker exec backend-db-1 psql -U postgres -d agentic_stock -c "SELECT current_database();"
 ```
 
-### MLFlow Issues
-```bash
-# Check MLFlow service
-curl http://localhost:5001/health
-
-# View MLFlow logs
-docker logs backend-mlflow-1 -f
-
-# Test MLFlow connection
-python3 tests/test_mlflow.py
-```
-
 ### MCP Servers Not Starting
 ```bash
 # Check for Python import errors
 python3 -c "from graph import run_query_with_persistence; print('Import successful')"
-
+{{ ... }}
 # Check if ports are available
 netstat -an | grep -E "(8010|8020|8030|8040)"
 ```
@@ -249,12 +361,12 @@ netstat -an | grep -E "(8010|8020|8030|8040)"
 
 ## 🔄 Development Workflow
 
-1. **Start Database & MLFlow**: `docker compose up db mlflow -d`
+1. **Start Database**: `docker compose up db -d`
 2. **Start MCP Servers**: `python3 start_all_servers.py`
 3. **Start Backend**: `uvicorn main:app --reload` (for development)
 4. **Start Frontend**: `npm run dev`
 5. **Access Application**: http://localhost:3000
-6. **Monitor with MLFlow**: http://localhost:5001
+6. **Monitor Experiments**: Access Databricks MLflow UI
 
 ## 🎯 Example Queries
 
